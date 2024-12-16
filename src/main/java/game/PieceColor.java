@@ -1,4 +1,4 @@
-package org.example;
+package game;
 
 public enum PieceColor {
     WHITE, BLACK
