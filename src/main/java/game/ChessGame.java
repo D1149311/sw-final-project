@@ -1,5 +1,8 @@
 package game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessGame {
     public static final int BOARD_SIZE = 8;
 
@@ -60,17 +63,101 @@ public class ChessGame {
         return board;
     }
 
-//    public void isValidPos(int x, int y) {
-//
-//    }
-//
+    public List<Position> getMovableList(int x, int y) {
+        if (!isValidPos(x, y) && this.board[y][x] == null) {
+            return null;
+        }
+
+        if (this.board[y][x].getType() == PieceType.PAWN) {
+            if (this.board[y][x].getColor() == PieceColor.WHITE) {
+                int[][] deltaList = {{1, -1}, {-1, -1}};
+                return calculateMovable(x, y, deltaList);
+            } else if (this.board[y][x].getColor() == PieceColor.WHITE) {
+                int[][] deltaList = {{1, -1}, {1, 1}};
+                return calculateMovable(x, y, deltaList);
+            }
+        } else if (this.board[y][x].getType() == PieceType.KNIGHT) {
+            int[][] deltaList = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+            return calculateMovable(x, y, deltaList);
+        } else if (this.board[y][x].getType() == PieceType.BISHOP) {
+            int[][] deltaList = {
+                {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7},
+                {-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7},
+                {1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7},
+                {-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}
+            };
+            return calculateMovable(x, y, deltaList);
+        } else if (this.board[y][x].getType() == PieceType.ROOK) {
+            int[][] deltaList = {
+                {1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0},
+                {-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0},
+                {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7},
+                {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}
+            };
+            return calculateMovable(x, y, deltaList);
+        } else if (this.board[y][x].getType() == PieceType.QUEEN) {
+            int[][] deltaList = {
+                {1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0},
+                {-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0},
+                {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7},
+                {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7},
+                {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7},
+                {-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7},
+                {1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7},
+                {-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}
+            };
+            return calculateMovable(x, y, deltaList);
+        } else if (this.board[y][x].getType() == PieceType.KING) {
+            int[][] deltaList = {
+                {1, -1}, {1, 0}, {1, 1}, {0, 1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}
+            };
+
+            List<Position> result = calculateMovable(x, y, deltaList);
+            List<Position> dangerList = new ArrayList<>();
+
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                for (int j = 0; j < BOARD_SIZE; j++) {
+                    if (this.board[i][j] != null && this.board[i][j].getColor() != this.board[y][x].getColor() && this.board[i][j].getType() != PieceType.KING) {
+                        dangerList.addAll(getMovableList(j, i));
+                    }
+                }
+            }
+
+            result.removeAll(dangerList);
+
+            return result;
+        }
+
+        return null;
+    }
+
+    public boolean isValidPos(int x, int y) {
+        return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
+    }
+
+    private List<Position> calculateMovable(int x, int y, int[][] deltaList) {
+        List<Position> result = new ArrayList<>();
+
+        for (int[] delta : deltaList) {
+            if (isValidPos(x + delta[0], y + delta[1])) {
+                if (this.board[y][x] == null) {
+                    result.add(new Position(x + delta[0], y + delta[1], false));
+                } else if (this.board[y + delta[1]][x + delta[0]].getColor() != this.board[y][x].getColor()) {
+                    result.add(new Position(x + delta[0], y + delta[1], true));
+                }
+            }
+        }
+
+        return result;
+    }
+
 //    public void move(int fromX, int fromY, int toX, int toY) {
 //
 //    }
-//
-//    public void getTurn() {
-//
-//    }
+
+    public PieceColor getTurn() {
+        return this.turn;
+    }
 //
 //    public String checkGameStatus() {
 //
