@@ -31,6 +31,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Dependency directories ###
+node_modules/
+
 ### VS Code ###
 .vscode/
 
