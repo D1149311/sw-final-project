@@ -39,6 +39,9 @@ public class ChessBoard {
         if (board[fromY][fromX].type == PieceType.ROOK) {
             result = RookPiece.getPossibleMoves(fromX, fromY, board);
         }
+        if(board[fromY][fromX].type == PieceType.King){
+            result = KingPiece.getPossibleMoves(fromX, fromY, board);
+        }
 
         boolean canMove = false;
         for (Position pos : result) {
