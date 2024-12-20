@@ -1,7 +1,6 @@
 package game;
 
-import game.piece.RookPiece;
-
+import game.piece.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +38,11 @@ public class ChessBoard {
         if (board[fromY][fromX].type == PieceType.ROOK) {
             result = RookPiece.getPossibleMoves(fromX, fromY, board);
         }
-        if(board[fromY][fromX].type == PieceType.King){
+        if(board[fromY][fromX].type == PieceType.KING){
             result = KingPiece.getPossibleMoves(fromX, fromY, board);
+        }
+        if(board[fromY][fromX].type == PieceType.BISHOP){
+            result = BishopPiece.getPossibleMoves(fromX, fromY, board);
         }
 
         boolean canMove = false;
