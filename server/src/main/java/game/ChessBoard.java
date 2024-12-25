@@ -42,9 +42,9 @@ public class ChessBoard {
 //            board[1][i] = new PawnPiece(PieceColor.BLACK);
 //            board[6][i] = new PawnPiece(PieceColor.WHITE);
 //        }
-        board[0][4] = new KingPiece(PieceColor.BLACK);
-        board[7][4] = new KingPiece(PieceColor.WHITE);
-        board[7][3] = new RookPiece(PieceColor.BLACK);
+//        board[0][4] = new KingPiece(PieceColor.BLACK);
+//        board[7][4] = new KingPiece(PieceColor.WHITE);
+//        board[7][3] = new RookPiece(PieceColor.BLACK);
     }
 
     private void initializeGame() {
@@ -191,13 +191,6 @@ public class ChessBoard {
                 return false;
             }
         }
-        if(board[fromY][fromX].type == PieceType.KING){
-            result = KingPiece.getPossibleMoves(fromX, fromY, board);
-        }
-        if(board[fromY][fromX].type == PieceType.BISHOP){
-            result = BishopPiece.getPossibleMoves(fromX, fromY, board);
-        }
-
         ChessPiece piece = board[fromY][fromX];
         List<Position> possibleMoves = new ArrayList<>();
         boolean canMove = false;
