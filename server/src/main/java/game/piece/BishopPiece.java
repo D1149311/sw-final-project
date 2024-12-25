@@ -9,7 +9,7 @@ public class BishopPiece extends ChessPiece {
     public BishopPiece(PieceColor color) {
         super(PieceType.BISHOP, color);
     }
-
+  
     // 取得合法的移動範圍
     public static List<Position> getPossibleMoves(int x, int y, ChessPiece[][] board) {
         List<Position> result = new ArrayList<>();
@@ -39,7 +39,7 @@ public class BishopPiece extends ChessPiece {
 
         return result;
     }
-
+  
     // 提供方向資訊（四個對角方向）
     private static int[][] getDirections() {
         return new int[][]{

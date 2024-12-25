@@ -191,6 +191,12 @@ public class ChessBoard {
                 return false;
             }
         }
+        if(board[fromY][fromX].type == PieceType.KING){
+            result = KingPiece.getPossibleMoves(fromX, fromY, board);
+        }
+        if(board[fromY][fromX].type == PieceType.BISHOP){
+            result = BishopPiece.getPossibleMoves(fromX, fromY, board);
+        }
 
         ChessPiece piece = board[fromY][fromX];
         List<Position> possibleMoves = new ArrayList<>();

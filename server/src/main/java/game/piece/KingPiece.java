@@ -119,7 +119,6 @@ public class KingPiece extends ChessPiece {
         return result;
     }
 
-
     // Check if castling is possible (both for short and long castling)
 //    public boolean canCastle(int x, int y, ChessPiece[][] board, boolean isShortCastle) {
 //        if (hasMoved() || isInCheck) {
