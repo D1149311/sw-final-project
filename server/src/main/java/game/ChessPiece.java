@@ -2,7 +2,7 @@ package game;
 
 import java.util.List;
 
-public abstract class ChessPiece {
+public abstract class ChessPiece implements Cloneable {
     public final PieceType type;
     public final PieceColor color;
 
@@ -11,7 +11,13 @@ public abstract class ChessPiece {
         this.color = color;
     }
 
-    public static List<Position> getPossibleMoves(int x, int y, ChessPiece[][] board) throws Exception {
-        throw new Exception("not implemented");
+    @Override
+    public ChessPiece clone() {
+        try {
+            return (ChessPiece) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
