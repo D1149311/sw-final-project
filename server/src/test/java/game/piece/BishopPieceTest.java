@@ -41,13 +41,9 @@ class BishopPieceTest {
         List<Position> expect = new ArrayList<>();
         empty_board[3][3] = new BishopPiece(PieceColor.WHITE);
         empty_board[0][0] = new BishopPiece(PieceColor.WHITE);
-        for(int x = 1; x < 4; x++){
+        for(int x = 1; x < 3; x++){
             int y = x;
-            if(x==3){
-                expect.add(new Position(x,y,false));
-            }else {
-                expect.add(new Position(x,y, false));
-            }
+            expect.add(new Position(x,y,false));
         }
         List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
         PositionTest.assertPosition(expect,result);

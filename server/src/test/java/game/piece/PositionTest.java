@@ -24,6 +24,6 @@ public class PositionTest {
 //        }
         Set<Position> expectedSet = new HashSet<Position>(expected);
         Set<Position> actualSet = new HashSet<Position>(actual);
-        assertTrue(expectedSet.equals(actualSet));
+        assertEquals(expectedSet, actualSet);
     }
 }
