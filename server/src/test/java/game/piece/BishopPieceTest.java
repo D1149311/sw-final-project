@@ -48,4 +48,13 @@ class BishopPieceTest {
         List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
         PositionTest.assertPosition(expect,result);
     }
+    @Test
+    void TestCorner(){
+        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expect = new ArrayList<>();
+        empty_board[1][1] = new BishopPiece(PieceColor.WHITE);
+        empty_board[0][0] = new BishopPiece(PieceColor.WHITE);
+        List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
+        PositionTest.assertPosition(expect,result);
+    }
 }
