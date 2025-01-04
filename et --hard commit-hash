@@ -1,0 +1,203 @@
+[33mcommit c229386d864799bdea3985538e660c37439f2ffd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: f65cab4 693de44
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Sat Jan 4 15:16:59 2025 +0800
+
+    PieceTest
+
+[33mcommit f65cab49ea337f2c71e102986fe1f4b377bc964c[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Sat Jan 4 15:13:16 2025 +0800
+
+    回上版本
+
+[33mcommit 693de44fab29cc3919fc510b3a4a2aadfdf710d2[m
+Merge: fc5e197 5090ebd
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Sat Jan 4 15:06:24 2025 +0800
+
+    PieceTestupdate
+
+[33mcommit 5090ebd7f0a2755598aebcaaeebba735af61a961[m
+Merge: 1ff5fe0 8e7bbae
+Author: Ren-De-Yang <57990456+Ren-De-Yang@users.noreply.github.com>
+Date:   Sat Jan 4 14:46:15 2025 +0800
+
+    Merge pull request #6 from D1149311/gui
+    
+    Gui
+
+[33mcommit 8e7bbae671493303e11ce0c9c68a85ade7e521b2[m[33m ([m[1;31morigin/gui[m[33m)[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Sat Jan 4 14:45:17 2025 +0800
+
+    update README.md
+
+[33mcommit f9111312c2bc3950847d99a8776c33d5c5f622cd[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Sat Jan 4 14:43:50 2025 +0800
+
+    fixed bugs of chess game and finished login register
+
+[33mcommit fc5e197c1386f03a0fa41d3388e1ffa13639a05e[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Jan 3 23:41:29 2025 +0800
+
+    tryMerge
+
+[33mcommit b29f43e43ac6f78aeecd2dd6be06c0876c911ba5[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Jan 3 23:22:44 2025 +0800
+
+    Queen&PawnTest
+
+[33mcommit 18067d0e10fff724a290db0021aaae45b35361eb[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Jan 3 15:01:24 2025 +0800
+
+    Cannot read field color because pawn is null
+
+[33mcommit e45af9ae1fdd66ef007c11766c096573f3c79983[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Jan 3 14:56:55 2025 +0800
+
+    update Bishop-King-Knight-pawnTests
+
+[33mcommit 68657145ff60dbdf983e516483b15fe4196a7d9c[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Thu Jan 2 19:25:21 2025 +0800
+
+    Bishopcornertest
+
+[33mcommit 41d75512874195c443ad55f559968e64d14c15d7[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Thu Jan 2 19:18:58 2025 +0800
+
+    BishopTest eatable block
+
+[33mcommit 4a7ad1e0dfed213731f605a10a52058f3afe805d[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Thu Jan 2 18:49:38 2025 +0800
+
+    BishopTest
+
+[33mcommit ff9c85bb6b481a096aed8e7ee5da699aef8b3429[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Wed Dec 25 15:45:36 2024 +0800
+
+    PieceTestBishop
+
+[33mcommit 1ff5fe0ab0e37189cf194af1cb4de7af05a76b2c[m
+Merge: 721d04a a1c3d33
+Author: Ren-De-Yang <57990456+Ren-De-Yang@users.noreply.github.com>
+Date:   Wed Dec 25 13:16:35 2024 +0800
+
+    Merge pull request #5 from D1149311/game-logic
+    
+    Game logic
+
+[33mcommit a1c3d33d7216831671bb482a5162738009bf9bfb[m
+Merge: 8c71007 721d04a
+Author: Ren-De-Yang <57990456+Ren-De-Yang@users.noreply.github.com>
+Date:   Wed Dec 25 13:16:21 2024 +0800
+
+    Merge branch 'main' into game-logic
+
+[33mcommit 8c710079b033589c59aac99b1d7a6b50bc01022b[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Wed Dec 25 13:11:26 2024 +0800
+
+    finish chess game logic
+
+[33mcommit 721d04a3338bf146f825da59aeeb65ec3a85d79d[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Dec 20 17:34:10 2024 +0800
+
+    update BishopPossibleMove
+
+[33mcommit c9caae241205c0edc1fa32d75403d54c23eaacd9[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Fri Dec 20 17:11:25 2024 +0800
+
+    ChessBoard and KingPiece update PossibleMove
+
+[33mcommit 862a33e3b01ba2056d9523dffbd036a9b387b9a3[m[33m ([m[1;31morigin/game-logic[m[33m)[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Thu Dec 19 15:39:32 2024 +0800
+
+    finish websocket basic example
+
+[33mcommit e48419064814f58f31d133ce643594b6391c753d[m
+Merge: d5484c8 44b4fe5
+Author: Ren-De-Yang <57990456+Ren-De-Yang@users.noreply.github.com>
+Date:   Wed Dec 18 23:11:23 2024 +0800
+
+    Merge pull request #4 from D1149311/game-logic
+    
+    Reorganize project structure
+
+[33mcommit 44b4fe53b9aeffc92a68f142d3d47f7a7d81d67f[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Wed Dec 18 23:09:54 2024 +0800
+
+    reorganize project structure
+
+[33mcommit 953286db61def7c51ca719c090e9e27d399fef86[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Tue Dec 17 22:45:18 2024 +0800
+
+    finish get movable list
+
+[33mcommit d5484c84e9693ba62484d9740460e26f8bb2905f[m
+Merge: d5f9209 49c1b56
+Author: Ren-De-Yang <57990456+Ren-De-Yang@users.noreply.github.com>
+Date:   Mon Dec 16 23:12:17 2024 +0800
+
+    Merge pull request #3 from D1149311/project-structure
+    
+    finish project structure design
+
+[33mcommit 49c1b5655cebde93c31c32a40581baab47a41cbb[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Mon Dec 16 23:09:13 2024 +0800
+
+    finish project structure design
+
+[33mcommit d5f9209741dca1511d2d6e29c6ff9969110e7302[m
+Merge: c761876 99ab7ae
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Mon Dec 16 22:52:00 2024 +0800
+
+    Merge pull request #2 from D1149311/project-structure
+    
+    Project structure
+
+[33mcommit 99ab7ae7b3dd2600cd71bd448a1602963bbc3d1b[m[33m ([m[1;31morigin/project-structure[m[33m)[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Mon Dec 16 21:47:44 2024 +0800
+
+    finish project structure design
+
+[33mcommit 528302272025cb372b594c394b8163362f45e6e1[m
+Author: Ren-De-Yang <duke930323@gmail.com>
+Date:   Sun Dec 15 22:02:56 2024 +0800
+
+    Design project structure - Chess logic only
+
+[33mcommit c7618764753ca1f88b8746c228ddaf9d6516f812[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Wed Dec 11 16:14:37 2024 +0800
+
+    test
+
+[33mcommit de1136e5367e133f5173d557ad5737c90bce81a3[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Wed Dec 11 15:09:47 2024 +0800
+
+    更新 README.md
+
+[33mcommit 92eed546a15b5ea3a1018aed175dc1fe4061e090[m
+Author: D1149311 <126126863+D1149311@users.noreply.github.com>
+Date:   Wed Dec 11 15:04:40 2024 +0800
+
+    Initial commit

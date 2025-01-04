@@ -6,57 +6,78 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-
 class BishopPieceTest {
     @Test
-    void Test() {
-        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-        List<Position> expect = new ArrayList<>();
-        for(int x = 1; x < 8; x++){
-            int y = x;
-            expect.add(new Position(x,y,false));
+    void testEmptyBoard() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expected = new ArrayList<>();
+        for (int i = 1; i < ChessUtils.BOARD_SIZE; i++) {
+            expected.add(new Position(i, i, false));
         }
-        empty_board[0][0] = new BishopPiece(PieceColor.WHITE);
-        List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
-        PositionTest.assertPosition(expect,result);
+        board[0][0] = new BishopPiece(PieceColor.WHITE);
+        List<Position> result = BishopPiece.getPossibleMoves(0, 0, board);
+        PositionTest.assertPosition(expected, result);
     }
+
     @Test
-    void TestEat() {
-        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-        List<Position> expect = new ArrayList<>();
-        empty_board[3][3] = new BishopPiece(PieceColor.WHITE);
-        empty_board[0][0] = new BishopPiece(PieceColor.BLACK);
-        for(int x = 1; x < 4; x++){
-            int y = x;
-            if(x==3){
-                expect.add(new Position(x,y,true));
-            }else {
-                expect.add(new Position(x,y, false));
-            }
+    void testCaptureOpponentPiece() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expected = new ArrayList<>();
+        board[0][0] = new BishopPiece(PieceColor.WHITE);
+        board[3][3] = new BishopPiece(PieceColor.BLACK);
+        for (int i = 1; i < 4; i++) {
+            expected.add(new Position(i, i, i == 3));
         }
-        List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
-        PositionTest.assertPosition(expect,result);
+        List<Position> result = BishopPiece.getPossibleMoves(0, 0, board);
+        PositionTest.assertPosition(expected, result);
     }
+
     @Test
-    void TestBlock(){
-        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-        List<Position> expect = new ArrayList<>();
-        empty_board[3][3] = new BishopPiece(PieceColor.WHITE);
-        empty_board[0][0] = new BishopPiece(PieceColor.WHITE);
-        for(int x = 1; x < 3; x++){
-            int y = x;
-            expect.add(new Position(x,y,false));
+    void testBlockedBySameColorPiece() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expected = new ArrayList<>();
+        board[0][0] = new BishopPiece(PieceColor.WHITE);
+        board[3][3] = new BishopPiece(PieceColor.WHITE);
+        for (int i = 1; i < 3; i++) {
+            expected.add(new Position(i, i, false));
         }
-        List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
-        PositionTest.assertPosition(expect,result);
+        List<Position> result = BishopPiece.getPossibleMoves(0, 0, board);
+        PositionTest.assertPosition(expected, result);
     }
+
     @Test
-    void TestCorner(){
-        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-        List<Position> expect = new ArrayList<>();
-        empty_board[1][1] = new BishopPiece(PieceColor.WHITE);
-        empty_board[0][0] = new BishopPiece(PieceColor.WHITE);
-        List<Position> result = BishopPiece.getPossibleMoves(0,0,empty_board);
-        PositionTest.assertPosition(expect,result);
+    void testCornerPosition() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expected = new ArrayList<>();
+        board[7][7] = new BishopPiece(PieceColor.WHITE);
+        for (int i = 1; i < ChessUtils.BOARD_SIZE; i++) {
+            expected.add(new Position(7 - i, 7 - i, false));
+        }
+        List<Position> result = BishopPiece.getPossibleMoves(7, 7, board);
+        PositionTest.assertPosition(expected, result);
     }
+
+    @Test
+    void testNoPossibleMoves() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[0][0] = new BishopPiece(PieceColor.WHITE);
+        board[1][1] = new BishopPiece(PieceColor.WHITE);
+        List<Position> expected = new ArrayList<>();
+        List<Position> result = BishopPiece.getPossibleMoves(0, 0, board);
+        PositionTest.assertPosition(expected, result);
+    }
+
+//    @Test
+//    void testBoardEdges() {
+//        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+//        List<Position> expected = new ArrayList<>();
+//        board[0][7] = new BishopPiece(PieceColor.WHITE);
+//        for (int i = 1; i < ChessUtils.BOARD_SIZE; i++) {
+//            if (0 + i < ChessUtils.BOARD_SIZE && 7 - i >= 0) {
+//                expected.add(new Position(0 + i, 7 - i, false));
+//            }
+//        }
+//        List<Position> result = BishopPiece.getPossibleMoves(0, 7, board);
+//        PositionTest.assertPosition(expected, result);
+//    }
 }
