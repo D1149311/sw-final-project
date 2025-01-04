@@ -12,6 +12,10 @@ public class ChessBoard implements IChessService {
     public ChessPiece[][] board;
     public PieceColor turn;
     private Position lastMove;
+    private boolean requestPromote = false;
+    private ChessPiece promotePawn;
+    private int promoteX, promoteY;
+
     /**
      * 初始化棋盤
      **/
@@ -206,7 +210,13 @@ public class ChessBoard implements IChessService {
                     possibleMoves = PawnPiece.getPossibleMoves(fromX, fromY, board, lastMove);
                     break;
                 case KING:
-                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
+                    List<Position> availableMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
+                    for (Position pos : availableMoves) {
+                        if (canRemoveThreat(fromX, fromY, pos.col, pos.row, board)) {
+                            possibleMoves.add(pos);
+                        }
+                    }
+//                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
                     break;
             }
         }
@@ -231,8 +241,6 @@ public class ChessBoard implements IChessService {
                 List<Position> possibleMoves = getPossibleMoves(fromX, fromY);
                 boolean canMove = false;
 
-
-
                 // Check if the move is valid
                 for (final Position pos : possibleMoves) {
                     if (pos.col == toX && pos.row == toY) {
@@ -256,10 +264,10 @@ public class ChessBoard implements IChessService {
                             System.out.println("Error: Rook is either missing, has already moved, or is not the correct color.");
                         } else {
                             // Perform castling
-                            board[toY][rookDestX] = board[fromY][7];
-                            board[toY][kingDestX] = board[fromY][4];
+                            board[toY][rookDestX] = rook;
+                            board[toY][kingDestX] = king;
                             board[fromY][4] = null;
-                            board[fromY][7] = null;
+                            board[toY][(fromX == 4 && toX == 6) ? 7 : 0] = null;
                             ((RookPiece) board[toY][rookDestX]).setHasMoved();
                             ((KingPiece) board[toY][kingDestX]).setHasMoved();
                             result = true;  // Set result to true as castling is valid
@@ -272,7 +280,11 @@ public class ChessBoard implements IChessService {
                     if (piece.type == PieceType.PAWN) {
                         final PawnPiece pawn = (PawnPiece) piece;
                         if (shouldPromotePawn(pawn, toY)) {
-                            promotePawn(pawn, toX, toY, board);
+                            requestPromote = true;
+                            promotePawn = pawn;
+                            promoteX = toX;
+                            promoteY = toY;
+                            board[toY][toX] = board[fromY][fromX];
                             board[fromY][fromX] = null;
                             result = true;
                         } else {
@@ -307,7 +319,9 @@ public class ChessBoard implements IChessService {
                     }
 
                     lastMove = new Position(toX, toY, false);
-                    turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // Switch turn
+                    if (!requestPromote) {
+                        turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // Switch turn
+                    }
                     printBoard();
                 }
             }
@@ -328,40 +342,39 @@ public class ChessBoard implements IChessService {
                 || (pawn.color == PieceColor.BLACK && toY == ChessUtils.BOARD_SIZE - 1);
     }
 
+    public boolean requestingPromote() {
+        return requestPromote;
+    }
+
     /**
      * 處理兵的升變邏輯。
      */
+    public void promotePawn(PieceType choice) {
+        if (!this.requestPromote) return;
 
-    private void promotePawn(final PawnPiece pawn, final int toX, final int toY, final ChessPiece[][] board) {
-        System.out.println("Pawn reached the opponent's back rank. Choose promotion (Q, R, B, N):");
-
-        // Do not close the scanner here; we are using it in the main method
-        Scanner scanner = new Scanner(System.in); // Use an existing scanner object from the main method
-
-        final String choice = scanner.nextLine().toUpperCase(Locale.ROOT);  // Use Locale.ROOT for consistent behavior
-
-        final ChessPiece promotedPiece;
+        ChessPiece promotedPiece = null;
         switch (choice) {
-            case "Q":
-                promotedPiece = new QueenPiece(pawn.color);
+            case PieceType.QUEEN:
+                promotedPiece = new QueenPiece(promotePawn.color);
                 break;
-            case "R":
-                promotedPiece = new RookPiece(pawn.color);
+            case PieceType.ROOK:
+                promotedPiece = new RookPiece(promotePawn.color);
                 break;
-            case "B":
-                promotedPiece = new BishopPiece(pawn.color);
+            case PieceType.BISHOP:
+                promotedPiece = new BishopPiece(promotePawn.color);
                 break;
-            case "N":
-                promotedPiece = new KnightPiece(pawn.color);
+            case PieceType.KNIGHT:
+                promotedPiece = new KnightPiece(promotePawn.color);
                 break;
-            default:
-                System.out.println("Invalid choice. Defaulting to Queen.");
-                promotedPiece = new QueenPiece(pawn.color);
         }
 
-        // Replace the pawn with the new promoted piece
-        board[toY][toX] = promotedPiece;
-        System.out.println("Pawn promoted to " + promotedPiece.getClass().getSimpleName());
+        if (promotedPiece != null) {
+            // Replace the pawn with the new promoted piece
+            board[promoteY][promoteX] = promotedPiece;
+            turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // Switch turn
+            this.requestPromote = false;
+            System.out.println("Pawn promoted to " + promotedPiece.getClass().getSimpleName());
+        }
     }
 
 
