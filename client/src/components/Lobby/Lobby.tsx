@@ -11,7 +11,15 @@ function Lobby() {
   const navigate = useNavigate();
 
   const handlePlay = (type: string) => {
-    gameContext!.chessSocket!.send(`play ${type}`);
+    if (type !== "friend") {
+      gameContext!.chessSocket!.send(`play ${type}`);
+    } else {
+      const result = prompt("請輸入房間號碼");
+      if (result) {
+        gameContext!.chessSocket!.send(`play ${type} ${result}`);
+      }
+    }
+    
   };
 
   const handleLogout = () => {
@@ -34,7 +42,7 @@ function Lobby() {
 
       if (cmd === "play") {
         if (message === "success") {
-          navigate("/game");
+          navigate("/game", {replace: true});
         } else {
           console.warn(message);
           alert(message);
@@ -52,7 +60,7 @@ function Lobby() {
         setPoint(msg[1]);
       } else if (cmd === "logout") {
         if (message === "success") {
-          navigate("/login");
+          navigate("/login", {replace: true});
         } else {
           console.warn(message);
           alert(message);
@@ -79,7 +87,8 @@ function Lobby() {
         </div>
       </div>
       <div className="action">
-        <button id="friend" onClick={() => handlePlay("friend")}>跟好友玩</button>
+        <button id="create" onClick={() => handlePlay("create")}>創建房間</button>
+        <button id="friend" onClick={() => handlePlay("friend")}>加入房間</button>
         <button id="online" onClick={() => handlePlay("online")}>線上配對</button>
       </div>
       <div className="rank">

@@ -36,7 +36,7 @@ function SignupForm() {
                 setIsLoading(false);
 
                 if (message === "success") {
-                    navigate("/login");
+                    navigate("/login", {replace: true});
                 } else {
                     console.log(message);
                     setError(message);

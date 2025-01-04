@@ -4,12 +4,15 @@ import game.*;
 import network.ChessWebSocket;
 import network.Client;
 import network.Room;
+import storage.User;
 
 import java.util.List;
 
 public class GameRoom extends Room {
     private Client black, white;
     private IChessService chessService;
+    private boolean gameOver = false;
+    public int point = 0;
 
     public GameRoom(String id, ChessWebSocket controller) {
         super(id, controller);
@@ -19,6 +22,7 @@ public class GameRoom extends Room {
     public void addClient(Client client) {
         super.addClient(client);
 
+        System.out.println("add client to game room");
         if (this.clients.size() == 2) {
             white = this.clients.get(1);
             black = this.clients.get(0);
@@ -43,6 +47,21 @@ public class GameRoom extends Room {
 
             white.conn.send(String.valueOf(result));
             black.conn.send(String.valueOf(result));
+        }
+    }
+
+    @Override
+    public void removeClient(Client client) {
+        super.removeClient(client);
+
+        if (!gameOver) {
+            gameOver = true;
+            Client winner = (client == white ? black : white);
+            User user = controller.userService.findUserById(winner.id);
+            user.point = String.valueOf(Integer.parseInt(user.point) + point);
+            controller.userService.save();
+            controller.destroyRoom(id);
+            winner.conn.send("end " + client.id + " leave the room");
         }
     }
 
@@ -96,13 +115,18 @@ public class GameRoom extends Room {
                     if (chessService.requestingPromote()) {
                         client.conn.send("promote");
                     } else if (chessService.isCheckmate()) {
+                        gameOver = true;
+                        User user = controller.userService.findUserById(client.id);
+                        user.point = String.valueOf(Integer.parseInt(user.point) + point);
+                        controller.userService.save();
+                        controller.destroyRoom(id);
                         white.conn.send("end " + chessService.getTurn() + " is checkmated!");
                         black.conn.send("end " + chessService.getTurn() + " is checkmated!");
-                        controller.destroyRoom(id);
                     } else if (chessService.isDraw()) {
+                        gameOver = true;
+                        controller.destroyRoom(id);
                         white.conn.send("end " + "The game is a draw!");
                         black.conn.send("end " + "The game is a draw!");
-                        controller.destroyRoom(id);
                     } else {
                         if (chessService.isKingThreatened(PieceColor.BLACK)) {
                             white.conn.send("threat " + "BLACK");
@@ -153,13 +177,18 @@ public class GameRoom extends Room {
 
             // check whether the game is over
             if (chessService.isCheckmate()) {
+                gameOver = true;
+                User user = controller.userService.findUserById(client.id);
+                user.point = String.valueOf(Integer.parseInt(user.point) + point);
+                controller.userService.save();
+                controller.destroyRoom(id);
                 white.conn.send("end " + chessService.getTurn() + " is checkmated!");
                 black.conn.send("end " + chessService.getTurn() + " is checkmated!");
-                controller.destroyRoom(id);
             } else if (chessService.isDraw()) {
+                gameOver = true;
+                controller.destroyRoom(id);
                 white.conn.send("end " + "The game is a draw!");
                 black.conn.send("end " + "The game is a draw!");
-                controller.destroyRoom(id);
             } else {
                 if (chessService.isKingThreatened(PieceColor.BLACK)) {
                     white.conn.send("threat " + "BLACK");

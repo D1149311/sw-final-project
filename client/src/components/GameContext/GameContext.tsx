@@ -24,14 +24,14 @@ function GameContextProvider({ children }: { children?: ReactNode }) {
         socket.onerror = (error) => {
             console.error('WebSocket error:', error);
             alert("Cannot connect to server!");
-            navigate("/login");
+            navigate("/login", {replace: true});
             socket.close();
         };
 
         socket.onclose = () => {
             console.error('WebSocket connection closed');
             alert("Cannot connect to server!");
-            navigate("/login");
+            navigate("/login", {replace: true});
             socket.close();
         };
 

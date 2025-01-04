@@ -35,14 +35,24 @@ public class LobbyRoom extends Room {
                     String id = controller.createRoom();
                     controller.joinRoom(waiting, id);
                     controller.joinRoom(client, id);
+                    ((GameRoom) controller.rooms.get(id)).point = 100;
                     waiting = null;
                 }
-            } else if (Objects.equals(msg[1], "friend")) {
+            } else if (Objects.equals(msg[1], "create")) {
                 client.conn.send("play success");
 
                 String id = controller.createRoom();
                 client.conn.send("id " + id);
                 controller.joinRoom(client, id);
+            } else if (Objects.equals(msg[1], "friend")) {
+                GameRoom room = (GameRoom) controller.rooms.get(msg[2]);
+                if (room != null && room.point == 0 && room.clients.size() < 2) {
+                    System.out.println();
+                    client.conn.send("play success");
+                    controller.joinRoom(client, msg[2]);
+                } else {
+                    client.conn.send("play cannot find the room");
+                }
             } else {
                 client.conn.send("play unknown command");
             }

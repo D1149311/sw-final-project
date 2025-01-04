@@ -7,7 +7,7 @@ function useGame() {
 
   const navigate = useNavigate();
   if (!gameContext || gameContext.auth) {
-    navigate("/login");
+    navigate("/login", {replace: true});
     return;
   }
 
