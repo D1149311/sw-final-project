@@ -4,40 +4,50 @@ import game.piece.*;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
-
-public class ChessBoard {
+import java.util.Locale;
+/**
+ * 判定棋局的移動、勝負
+ **/
+public class ChessBoard implements IChessService {
     public ChessPiece[][] board;
     public PieceColor turn;
     private Position lastMove;
-    private boolean isSimulating = false;
-
+    /**
+     * 初始化棋盤
+     **/
     public ChessBoard() {
         initializeBoard();
         initializeGame();
+    }
+
+    public PieceColor getTurn() {
+        return this.turn;
+    }
+
+    public ChessPiece[][] getBoard() {
+        return this.board;
     }
 
     private void initializeBoard() {
         board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
 
         // 初始化棋盤上的其他棋子
-//        board[0][0] = new RookPiece(PieceColor.BLACK);
-//        board[0][7] = new RookPiece(PieceColor.BLACK);
-//        board[7][0] = new RookPiece(PieceColor.WHITE);
-//        board[7][7] = new RookPiece(PieceColor.WHITE);
-//
-//        board[0][2] = new BishopPiece(PieceColor.BLACK);
-//        board[0][5] = new BishopPiece(PieceColor.BLACK);
-//        board[7][2] = new BishopPiece(PieceColor.WHITE);
-//        board[7][5] = new BishopPiece(PieceColor.WHITE);
+        board[0][0] = new RookPiece(PieceColor.BLACK);
+        board[0][7] = new RookPiece(PieceColor.BLACK);
+        board[7][0] = new RookPiece(PieceColor.WHITE);
+        board[7][7] = new RookPiece(PieceColor.WHITE);
 
-//        board[0][1] = new KnightPiece(PieceColor.BLACK);
-//        board[0][6] = new KnightPiece(PieceColor.BLACK);
-//        board[7][1] = new KnightPiece(PieceColor.WHITE);
-//        board[7][6] = new KnightPiece(PieceColor.WHITE);
+        board[0][2] = new BishopPiece(PieceColor.BLACK);
+        board[0][5] = new BishopPiece(PieceColor.BLACK);
+        board[7][2] = new BishopPiece(PieceColor.WHITE);
+        board[7][5] = new BishopPiece(PieceColor.WHITE);
 
-//        board[0][3] = new QueenPiece(PieceColor.BLACK);
-//        board[7][3] = new QueenPiece(PieceColor.WHITE);
+        board[0][1] = new KnightPiece(PieceColor.BLACK);
+        board[0][6] = new KnightPiece(PieceColor.BLACK);
+        board[7][1] = new KnightPiece(PieceColor.WHITE);
+        board[7][6] = new KnightPiece(PieceColor.WHITE);
 
+<<<<<<< HEAD
 //        for (int i = 0; i < ChessUtils.BOARD_SIZE; i++) {
 //            board[1][i] = new PawnPiece(PieceColor.BLACK);
 //            board[6][i] = new PawnPiece(PieceColor.WHITE);
@@ -45,65 +55,81 @@ public class ChessBoard {
 //        board[0][4] = new KingPiece(PieceColor.BLACK);
 //        board[7][4] = new KingPiece(PieceColor.WHITE);
 //        board[7][3] = new RookPiece(PieceColor.BLACK);
+=======
+        board[0][3] = new QueenPiece(PieceColor.BLACK);
+        board[7][3] = new QueenPiece(PieceColor.WHITE);
+
+        for (int i = 0; i < ChessUtils.BOARD_SIZE; i++) {
+            board[1][i] = new PawnPiece(PieceColor.BLACK);
+            board[6][i] = new PawnPiece(PieceColor.WHITE);
+        }
+        board[0][4] = new KingPiece(PieceColor.BLACK);
+        board[7][4] = new KingPiece(PieceColor.WHITE);
+>>>>>>> 5090ebd7f0a2755598aebcaaeebba735af61a961
     }
 
     private void initializeGame() {
         turn = PieceColor.WHITE;
     }
-
-    public boolean isKingThreatened(PieceColor currentColor) {
-
+    /**
+     * 檢查己方的國王是否受到威脅
+     **/
+    public boolean isKingThreatened(final PieceColor currentColor) {
+        boolean result = false;
         // 獲取對手的棋子
-        PieceColor opponentColor = currentColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+        final PieceColor opponentColor = currentColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
         // 查找對方棋子攻擊範圍
         for (int y = 0; y < ChessUtils.BOARD_SIZE; y++) {
             for (int x = 0; x < ChessUtils.BOARD_SIZE; x++) {
-                ChessPiece piece = board[y][x];
+                final ChessPiece piece = board[y][x];
                 if (piece != null && piece.color == opponentColor) {
-                    List<Position> attackRange = getAttackRangeForPiece(piece, x, y);
-                    for (Position pos : attackRange) {
+                    final List<Position> attackRange = getAttackRangeForPiece(piece, x, y);
+                    for (final Position pos : attackRange) {
                         // 檢查是否對方的攻擊範圍包含自己的國王
-                        if (board[pos.y][pos.x] != null && board[pos.y][pos.x].type == PieceType.KING &&
-                                board[pos.y][pos.x].color == currentColor) {
-                            return true; // 王被威脅
+                        if (board[pos.row][pos.col] != null && board[pos.row][pos.col].type == PieceType.KING &&
+                                board[pos.row][pos.col].color == currentColor) {
+                            result = true; // 王被威脅
                         }
                     }
                 }
             }
         }
-        return false; // 王沒被威脅
+        return result; // 王沒被威脅
     }
 
-    private List<Position> getAttackRangeForPiece(ChessPiece piece, int x, int y) {
+    private List<Position> getAttackRangeForPiece(final ChessPiece piece, final int col, final int row) {
         List<Position> attackRange = new ArrayList<>();
         switch (piece.type) {
             case ROOK:
-                attackRange = RookPiece.getPossibleMoves(x, y, board);
+                attackRange = RookPiece.getPossibleMoves(col, row, board);
                 break;
             case BISHOP:
-                attackRange = BishopPiece.getPossibleMoves(x, y, board);
+                attackRange = BishopPiece.getPossibleMoves(col, row, board);
                 break;
             case QUEEN:
-                attackRange = QueenPiece.getPossibleMoves(x, y, board);
+                attackRange = QueenPiece.getPossibleMoves(col, row, board);
                 break;
             case KNIGHT:
-                attackRange = KnightPiece.getPossibleMoves(x, y, board);
+                attackRange = KnightPiece.getPossibleMoves(col, row, board);
                 break;
             case PAWN:
-                attackRange = PawnPiece.getPossibleMoves(x, y, board, lastMove);
+                attackRange = PawnPiece.getPossibleMoves(col, row, board, lastMove);
                 break;
             case KING:
-                attackRange = KingPiece.getPossibleMoves(x, y, board);
+                attackRange = KingPiece.getPossibleMoves(col, row, board);
                 break;
         }
         return attackRange;
     }
-
-    private boolean canRemoveThreat(int fromX, int fromY, int toX, int toY) {
-        ChessPiece piece = board[fromY][fromX];
+    /**
+     * 檢查移動後己方的國王是否移除威脅
+     **/
+    public boolean canRemoveThreat(final int fromX, final int fromY, final int toX, final int toY, final ChessPiece[][] board) {
+        final ChessPiece piece = board[fromY][fromX];
         List<Position> possibleMoves = new ArrayList<>();
         boolean canMove = false;
+        boolean result = false;
 
         // 获取该棋子所有的可能移动
         switch (piece.type) {
@@ -128,8 +154,8 @@ public class ChessBoard {
         }
 
         // 检查移动是否合法
-        for (Position pos : possibleMoves) {
-            if (pos.x == toX && pos.y == toY) {
+        for (final Position pos : possibleMoves) {
+            if (pos.col == toX && pos.row == toY) {
                 canMove = true;
                 break;
             }
@@ -138,26 +164,25 @@ public class ChessBoard {
         // 如果能够合法移动
         if (canMove) {
             // 模拟棋盘的移动并判断是否能消除威胁
-            ChessBoard tempBoard = new ChessBoard();
+            final ChessBoard tempBoard = new ChessBoard();
             tempBoard.board = deepCopyBoard(board);  // 使用深拷贝的方法
             tempBoard.turn = this.turn; // 傳遞當前玩家的回合
             tempBoard.lastMove = this.lastMove; // 確保最後移動位置也同步
-            tempBoard.isSimulating = true; // 標記模擬狀態
 
             // 模擬移動
             tempBoard.board[toY][toX] = tempBoard.board[fromY][fromX];
             tempBoard.board[fromY][fromX] = null;
 
             // 如果移动后王没有被威胁，返回true
-            return !tempBoard.isKingThreatened(tempBoard.turn);
+            result = !tempBoard.isKingThreatened(tempBoard.turn);
         }
 
-        return false;
+        return result;
     }
 
     // 深拷贝棋盘的方法
-    private ChessPiece[][] deepCopyBoard(ChessPiece[][] originalBoard) {
-        ChessPiece[][] copy = new ChessPiece[originalBoard.length][originalBoard[0].length];
+    private ChessPiece[][] deepCopyBoard(final ChessPiece[][] originalBoard) {
+        final ChessPiece[][] copy = new ChessPiece[originalBoard.length][originalBoard[0].length];
         for (int i = 0; i < originalBoard.length; i++) {
             for (int j = 0; j < originalBoard[i].length; j++) {
                 if (originalBoard[i][j] != null) {
@@ -168,6 +193,7 @@ public class ChessBoard {
         return copy;
     }
 
+<<<<<<< HEAD
     public boolean move(int fromX, int fromY, int toX, int toY) {
         if (!ChessUtils.isValidPos(fromX, fromY) || !ChessUtils.isValidPos(toX, toY)) {
             System.out.println("Invalid position.");
@@ -191,214 +217,233 @@ public class ChessBoard {
                 return false;
             }
         }
-        ChessPiece piece = board[fromY][fromX];
+=======
+    public List<Position> getPossibleMoves(int fromX, int fromY) {
         List<Position> possibleMoves = new ArrayList<>();
-        boolean canMove = false;
 
-        // 判斷是否是可以移動的棋子
-        switch (piece.type) {
-            case ROOK:
-                possibleMoves = RookPiece.getPossibleMoves(fromX, fromY, board);
-                break;
-            case BISHOP:
-                possibleMoves = BishopPiece.getPossibleMoves(fromX, fromY, board);
-                break;
-            case QUEEN:
-                possibleMoves = QueenPiece.getPossibleMoves(fromX, fromY, board);
-                break;
-            case KNIGHT:
-                possibleMoves = KnightPiece.getPossibleMoves(fromX, fromY, board);
-                break;
-            case PAWN:
-                possibleMoves = PawnPiece.getPossibleMoves(fromX, fromY, board, lastMove);
-                break;
-            case KING:
-                possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
-                break;
-        }
-
-        // 检查选择的移动是否有效
-        for (Position pos : possibleMoves) {
-            if (pos.x == toX && pos.y == toY) {
-                canMove = true;
-                break;
+>>>>>>> 5090ebd7f0a2755598aebcaaeebba735af61a961
+        ChessPiece piece = board[fromY][fromX];
+        if (piece != null && piece.color == turn) {
+            // 判斷是否是可以移動的棋子
+            switch (piece.type) {
+                case ROOK:
+                    possibleMoves = RookPiece.getPossibleMoves(fromX, fromY, board);
+                    break;
+                case BISHOP:
+                    possibleMoves = BishopPiece.getPossibleMoves(fromX, fromY, board);
+                    break;
+                case QUEEN:
+                    possibleMoves = QueenPiece.getPossibleMoves(fromX, fromY, board);
+                    break;
+                case KNIGHT:
+                    possibleMoves = KnightPiece.getPossibleMoves(fromX, fromY, board);
+                    break;
+                case PAWN:
+                    possibleMoves = PawnPiece.getPossibleMoves(fromX, fromY, board, lastMove);
+                    break;
+                case KING:
+                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
+                    break;
             }
         }
 
-        // 如果是王车易位
-        if (piece.type == PieceType.KING) {
-            KingPiece king = (KingPiece) piece;
+        return possibleMoves;
+    }
 
-            // 右王车易位
-            if (fromX == 4 && toX == 6 && fromY == toY && !king.hasMoved()) {
-                ChessPiece rook = board[toY][7];  // 右侧的车
-                if (rook == null) {
-                    System.out.println("Error: No rook at the destination position for castling (right).");
-                    return false;  // Rook must exist at this position
+    /**
+     * 旗子的移動邏輯
+     **/
+    public boolean move(final int fromX, final int fromY, final int toX, final int toY) {
+        boolean result = false;  // Variable to store the result
+
+        // Perform all checks and move handling before returning
+        if (ChessUtils.isValidPos(fromX, fromY) && ChessUtils.isValidPos(toX, toY) &&
+                board[fromY][fromX] != null && board[fromY][fromX].color == turn) {
+
+            if (isKingThreatened(turn) && !canRemoveThreat(fromX, fromY, toX, toY, board)) {
+                System.out.println("You cannot make this move because your king is still under threat.");
+            } else {
+                final ChessPiece piece = board[fromY][fromX];
+                List<Position> possibleMoves = getPossibleMoves(fromX, fromY);
+                boolean canMove = false;
+
+
+
+                // Check if the move is valid
+                for (final Position pos : possibleMoves) {
+                    if (pos.col == toX && pos.row == toY) {
+                        canMove = true;
+                        break;
+                    }
                 }
 
-                if (rook.type == PieceType.ROOK && rook.color == turn && !((RookPiece) rook).hasMoved()) {
-                    // 执行王车易位
-                    board[toY][5] = board[fromY][7];  // 车移动到新的位置
-                    board[toY][6] = board[fromY][4];  // 王移动到新的位置
+                // King-side and Queen-side castling checks
+                if (piece.type == PieceType.KING) {
+                    final KingPiece king = (KingPiece) piece;
 
-                    board[fromY][4] = null;  // 原位置为空
-                    board[fromY][7] = null;  // 原位置为空
+                    if ((fromX == 4 && toX == 6 && fromY == toY && !king.hasMoved()) ||
+                            (fromX == 4 && toX == 2 && fromY == toY && !king.hasMoved())) {
 
-                    // 设置王和车已移动
-                    ((RookPiece) board[toY][5]).setHasMoved();
-                    ((KingPiece) board[toY][6]).setHasMoved();
-                    turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // 切换回合
-                    return true;
-                } else {
-                    System.out.println("Error: Rook is either missing, has already moved, or is not the correct color.");
-                    return false;
+                        final ChessPiece rook = (fromX == 4 && toX == 6) ? board[toY][7] : board[toY][0];  // Select the correct rook based on castling direction
+                        final int rookDestX = (fromX == 4 && toX == 6) ? 5 : 3;
+                        final int kingDestX = (fromX == 4 && toX == 6) ? 6 : 2;
+
+                        if (rook == null || rook.type != PieceType.ROOK || rook.color != turn || ((RookPiece) rook).hasMoved()) {
+                            System.out.println("Error: Rook is either missing, has already moved, or is not the correct color.");
+                        } else {
+                            // Perform castling
+                            board[toY][rookDestX] = board[fromY][7];
+                            board[toY][kingDestX] = board[fromY][4];
+                            board[fromY][4] = null;
+                            board[fromY][7] = null;
+                            ((RookPiece) board[toY][rookDestX]).setHasMoved();
+                            ((KingPiece) board[toY][kingDestX]).setHasMoved();
+                            result = true;  // Set result to true as castling is valid
+                        }
+                    }
                 }
-            }
 
-            // 左王车易位
-            else if (fromX == 4 && toX == 2 && fromY == toY && !king.hasMoved()) {
-                ChessPiece rook = board[toY][0];  // 左侧的车
-                if (rook == null) {
-                    System.out.println("Error: No rook at the destination position for castling (left).");
-                    return false;  // Rook must exist at this position
-                }
+                if (canMove) {
+                    // Handle pawn promotion
+                    if (piece.type == PieceType.PAWN) {
+                        final PawnPiece pawn = (PawnPiece) piece;
+                        if (shouldPromotePawn(pawn, toY)) {
+                            promotePawn(pawn, toX, toY, board);
+                            board[fromY][fromX] = null;
+                            result = true;
+                        } else {
+                            // Handle en passant
+                            if (pawn.enPassantCapture(fromX, fromY, toX, toY, board, lastMove)) {
+                                System.out.println("En Passant captured!");
+                                board[fromY][toX] = null;  // Remove captured pawn
+                            } else {
+                                board[toY][toX] = board[fromY][fromX];
+                            }
+                            board[fromY][fromX] = null;
+                            pawn.setMoved(true);
+                            result = true;
+                        }
+                    } else {
+                        if (canRemoveThreat(fromX, fromY, toX, toY, board)) {
+                            // Handle piece-specific movement
+                            if (piece.type == PieceType.ROOK) {
+                                ((RookPiece) piece).setHasMoved();
+                            } else if (piece.type == PieceType.KING) {
+                                ((KingPiece) piece).setHasMoved();
+                            }
 
-                if (rook.type == PieceType.ROOK && rook.color == turn && !((RookPiece) rook).hasMoved()) {
-                    // 执行王车易位
-                    board[toY][3] = board[fromY][0];  // 车移动到新的位置
-                    board[toY][2] = board[fromY][4];  // 王移动到新的位置
-                    
-                    board[fromY][4] = null;  // 原位置为空
-                    board[fromY][0] = null;  // 原位置为空
+                            // Perform the move
+                            board[toY][toX] = board[fromY][fromX];
+                            board[fromY][fromX] = null;
+                            result = true;  // Mark the move as successful
+                        } else {
+                            System.out.println("You cannot make this move because your king is still under threat.");
+                        }
 
-                    // 设置王和车已移动
-                    ((RookPiece) board[toY][3]).setHasMoved();
-                    ((KingPiece) board[toY][2]).setHasMoved();
-                    turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // 切换回合
-                    return true;
-                } else {
-                    System.out.println("Error: Rook is either missing, has already moved, or is not the correct color.");
-                    return false;
-                }
-            }
-        }
-
-        if (canMove) {
-            // 处理合法移动
-            if (piece.type == PieceType.PAWN) {
-                PawnPiece pawn = (PawnPiece) piece;
-
-                // 检查是否到达对手底线
-                if ((pawn.color == PieceColor.WHITE && toY == 0) || (pawn.color == PieceColor.BLACK && toY == ChessUtils.BOARD_SIZE - 1)) {
-                    System.out.println("Pawn reached the opponent's back rank. Choose promotion (Q, R, B, N):");
-                    Scanner scanner = new Scanner(System.in);
-                    String choice = scanner.nextLine().toUpperCase();
-
-                    ChessPiece promotedPiece = null;
-                    switch (choice) {
-                        case "Q":
-                            promotedPiece = new QueenPiece(pawn.color);
-                            break;
-                        case "R":
-                            promotedPiece = new RookPiece(pawn.color);
-                            break;
-                        case "B":
-                            promotedPiece = new BishopPiece(pawn.color);
-                            break;
-                        case "N":
-                            promotedPiece = new KnightPiece(pawn.color);
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Defaulting to Queen.");
-                            promotedPiece = new QueenPiece(pawn.color);
                     }
 
-                    // 升变后的新棋子替代兵
-                    board[toY][toX] = promotedPiece;
-                    board[fromY][fromX] = null; // 移除原位置的兵
-
-                    // 升变后切换回合
-                    turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-
-                    // 返回，切换到对方回合
-                    return true;
+                    lastMove = new Position(toX, toY, false);
+                    turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // Switch turn
+                    printBoard();
                 }
-
-                // 其他处理兵的规则，如过路兵
-                if (pawn.enPassantCapture(fromX, fromY, toX, toY, board, lastMove)) {
-                    System.out.println("En Passant captured!");
-                    board[fromY][toX] = null; // 删除敌方兵
-                } else {
-                    board[toY][toX] = board[fromY][fromX];
-                }
-
-                board[fromY][fromX] = null;
-                pawn.setHasMoved(true);
-            } else {
-                if (piece.type == PieceType.ROOK) {
-                    ((RookPiece) piece).setHasMoved();
-                } else if (piece.type == PieceType.KING) {
-                    ((KingPiece) piece).setHasMoved();
-                }
-
-                board[toY][toX] = board[fromY][fromX];
-                board[fromY][fromX] = null;
             }
-
-            if (!isSimulating) {
-                lastMove = new Position(toX, toY, false);
-                turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE; // 切換回合
-                printBoard();
-            }
-            return true;
         } else {
-            System.out.println("Invalid move for this piece.");
-            return false;
+            System.out.println("Invalid position or no piece to move.");
         }
+
+        // Return the result after all processing
+        return result;
     }
 
 
-    private boolean hasLegalMoves(PieceColor currentColor) {
+    /**
+     * 判斷是否需要升變。
+     */
+    private boolean shouldPromotePawn(final PawnPiece pawn, final int toY) {
+        return (pawn.color == PieceColor.WHITE && toY == 0)
+                || (pawn.color == PieceColor.BLACK && toY == ChessUtils.BOARD_SIZE - 1);
+    }
+
+    /**
+     * 處理兵的升變邏輯。
+     */
+
+    private void promotePawn(final PawnPiece pawn, final int toX, final int toY, final ChessPiece[][] board) {
+        System.out.println("Pawn reached the opponent's back rank. Choose promotion (Q, R, B, N):");
+
+        // Do not close the scanner here; we are using it in the main method
+        Scanner scanner = new Scanner(System.in); // Use an existing scanner object from the main method
+
+        final String choice = scanner.nextLine().toUpperCase(Locale.ROOT);  // Use Locale.ROOT for consistent behavior
+
+        final ChessPiece promotedPiece;
+        switch (choice) {
+            case "Q":
+                promotedPiece = new QueenPiece(pawn.color);
+                break;
+            case "R":
+                promotedPiece = new RookPiece(pawn.color);
+                break;
+            case "B":
+                promotedPiece = new BishopPiece(pawn.color);
+                break;
+            case "N":
+                promotedPiece = new KnightPiece(pawn.color);
+                break;
+            default:
+                System.out.println("Invalid choice. Defaulting to Queen.");
+                promotedPiece = new QueenPiece(pawn.color);
+        }
+
+        // Replace the pawn with the new promoted piece
+        board[toY][toX] = promotedPiece;
+        System.out.println("Pawn promoted to " + promotedPiece.getClass().getSimpleName());
+    }
+
+
+    private boolean hasLegalMoves(final PieceColor currentColor) {
+        boolean result = false;
+        final ChessBoard tempBoard = new ChessBoard();
         for (int y = 0; y < ChessUtils.BOARD_SIZE; y++) {
             for (int x = 0; x < ChessUtils.BOARD_SIZE; x++) {
-                ChessPiece piece = board[y][x];
+                final ChessPiece piece = board[y][x];
                 if (piece != null && piece.color == currentColor) {
-                    List<Position> possibleMoves = getAttackRangeForPiece(piece, x, y);
-                    for (Position move : possibleMoves) {
-                        ChessBoard tempBoard = new ChessBoard();
+                    final List<Position> possibleMoves = getAttackRangeForPiece(piece, x, y);
+                    for (final Position move : possibleMoves) {
                         tempBoard.board = deepCopyBoard(board);
                         tempBoard.turn = currentColor;
                         tempBoard.lastMove = lastMove;
-                        tempBoard.isSimulating = true;
-                        tempBoard.move(x, y, move.x, move.y);
+
+                        tempBoard.board[y][x] = tempBoard.board[move.row][move.col];
+                        tempBoard.board[move.row][move.col] = null;
+
                         if (!tempBoard.isKingThreatened(currentColor)) {
-                            return true; // 找到一個合法移動
+                            result = true; // 找到一個合法移動
                         }
                     }
                 }
             }
         }
-        return false; // 無任何合法移動
+        return result; // 無任何合法移動
     }
 
-    private boolean isInsufficientMaterial() {
+    private boolean islowDraw() {
         int whitePieces = 0, blackPieces = 0;
-        boolean whiteHasBishopOrKnight = false, blackHasBishopOrKnight = false;
+        boolean whiteHBK = false, blackHBK = false;
 
         for (int y = 0; y < ChessUtils.BOARD_SIZE; y++) {
             for (int x = 0; x < ChessUtils.BOARD_SIZE; x++) {
-                ChessPiece piece = board[y][x];
+                final ChessPiece piece = board[y][x];
                 if (piece != null) {
                     if (piece.color == PieceColor.WHITE) {
                         whitePieces++;
                         if (piece.type == PieceType.BISHOP || piece.type == PieceType.KNIGHT) {
-                            whiteHasBishopOrKnight = true;
+                            whiteHBK = true;
                         }
                     } else {
                         blackPieces++;
                         if (piece.type == PieceType.BISHOP || piece.type == PieceType.KNIGHT) {
-                            blackHasBishopOrKnight = true;
+                            blackHBK = true;
                         }
                     }
                 }
@@ -406,35 +451,43 @@ public class ChessBoard {
         }
 
         // 檢查是否僅剩國王，或國王加輕子
-        return (whitePieces == 1 || (whitePieces == 2 && whiteHasBishopOrKnight)) &&
-                (blackPieces == 1 || (blackPieces == 2 && blackHasBishopOrKnight));
+        return (whitePieces == 1 || (whitePieces == 2 && whiteHBK)) &&
+                (blackPieces == 1 || (blackPieces == 2 && blackHBK));
     }
-
+    /**
+     * 檢查棋局是否和局
+     **/
     public boolean isDraw() {
+        boolean result = false;
         // 1. 判斷是否無法合法移動（悶死局面）
         if (!hasLegalMoves(turn) && !isKingThreatened(turn)) {
             System.out.println("Stalemate! The game is a draw.");
-            return true;
+            result = true;
         }
 
         // 2. 檢查是否為物理和棋（僅剩國王或國王與輕子）
-        if (isInsufficientMaterial()) {
+        if (islowDraw()) {
             System.out.println("Insufficient material! The game is a draw.");
-            return true;
+            result = true;
         }
 
         // 3. 其他情況（如三次重複局面或 50 步規則）可根據需要實現
-        return false;
+        return result;
     }
-
+    /**
+     * 檢查棋局是否將死
+     **/
     public boolean isCheckmate() {
+        boolean result = false;
         if (isKingThreatened(turn) && !hasLegalMoves(turn)) {
             System.out.println(turn + " is checkmated! The game is over.");
-            return true;
+            result = true;
         }
-        return false;
+        return result;
     }
-
+    /**
+     * 劃出棋盤
+     **/
     public void printBoard() {
         System.out.print("   "); // 留空間給行號
         for (char c = 'A'; c < 'A' + ChessUtils.BOARD_SIZE; c++) {
@@ -448,7 +501,7 @@ public class ChessBoard {
                 if (board[y][x] == null) {
                     System.out.print(".   "); // 空格用 "." 表示
                 } else {
-                    String pieceSymbol = board[y][x].color.toString().charAt(0) + "" + board[y][x].type.toString().charAt(0);
+                    final String pieceSymbol = board[y][x].color.toString().charAt(0) + "" + board[y][x].type.toString().charAt(0);
                     System.out.print(pieceSymbol + " "); // 棋子符號
                     if (pieceSymbol.length() == 2) {
                         System.out.print(" "); // 添加額外空格保持對齊

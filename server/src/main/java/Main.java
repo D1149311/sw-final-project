@@ -1,15 +1,16 @@
+import game.ChessGame;
 import network.ChessWebSocket;
+import storage.UserService;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Main {
     public static int PORT = 8081;
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        // 指定主機和端口
-        ChessWebSocket server = new ChessWebSocket(PORT);
+        ChessGame gameService = new ChessGame();
+        UserService userService = new UserService();
+        ChessWebSocket server = new ChessWebSocket(PORT, userService, gameService);
 
         try {
             server.start();

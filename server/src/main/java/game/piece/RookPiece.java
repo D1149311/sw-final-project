@@ -4,30 +4,41 @@ import game.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 判定、設定棋子 城堡
+ **/
 public class RookPiece extends ChessPiece {
-    private boolean hasMoved = false; // Track if the rook has moved
+    private boolean moved; // Track if the rook has moved
 
-    public RookPiece(PieceColor color) {
+    /**
+     * 設定棋子種類、顏色
+     **/
+    public RookPiece(final PieceColor color) {
         super(PieceType.ROOK, color);
     }
 
-    // Mark the rook as moved
+    /**
+     * 設定棋子已被移動
+     **/
     public void setHasMoved() {
-        this.hasMoved = true;
+        this.moved = true;
     }
 
-    // Check if the rook has moved
+    /**
+     * 查看棋子是否已被移動
+     **/
     public boolean hasMoved() {
-        return this.hasMoved;
+        return this.moved;
     }
 
-    // Get possible moves for the rook
-    public static List<Position> getPossibleMoves(int x, int y, ChessPiece[][] board) {
-        List<Position> result = new ArrayList<>();
+    /**
+     * 取得合法的移動範圍
+     **/
+    public static List<Position> getPossibleMoves(final int col, final int row, final ChessPiece[][] board) {
+        final List<Position> result = new ArrayList<>();
 
-        for (int[] direction : getDirections()) {
-            int newX = x, newY = y;
+        for (final int[] direction : getDirections()) {
+            int newX = col, newY = row;
 
             while (true) {
                 newX += direction[0];
@@ -37,11 +48,11 @@ public class RookPiece extends ChessPiece {
                     break;
                 }
 
-                ChessPiece targetPiece = board[newY][newX];
+                final ChessPiece targetPiece = board[newY][newX];
                 if (targetPiece == null) {
                     result.add(new Position(newX, newY, false)); // Empty square
                 } else {
-                    if (targetPiece.color != board[y][x].color) {
+                    if (targetPiece.color != board[row][col].color) {
                         result.add(new Position(newX, newY, true)); // Attack
                     }
                     break; // Stop scanning if there's a piece in the way

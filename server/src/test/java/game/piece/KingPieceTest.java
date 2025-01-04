@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 class KingPieceTest {
     @Test
-    void Test() {//國王預計有8個可動，實際有九個
+    void Test() {
         ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
         List<Position> expect = new ArrayList<>();
         for(int x = 0; x < 3; x++){
@@ -56,6 +56,20 @@ class KingPieceTest {
         empty_board[1][0] = new KingPiece(PieceColor.WHITE);
         empty_board[0][0] = new KingPiece(PieceColor.WHITE);
         List<Position> result = KingPiece.getPossibleMoves(0,0,empty_board);
+        PositionTest.assertPosition(expect,result);
+    }
+    @Test
+    void RookKingTest(){
+        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expect = new ArrayList<>();
+        empty_board[0][4] = new KingPiece(PieceColor.BLACK);
+        empty_board[0][7] = new RookPiece(PieceColor.BLACK);
+        empty_board[1][4] = new PawnPiece(PieceColor.BLACK);
+        empty_board[0][3] = new QueenPiece(PieceColor.BLACK);
+        expect.add(new Position(6,0, false));
+        expect.add(new Position(5,0, false));
+
+        List<Position> result = KingPiece.getPossibleMoves(4,0,empty_board);
         PositionTest.assertPosition(expect,result);
     }
 }

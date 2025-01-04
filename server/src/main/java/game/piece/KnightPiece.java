@@ -4,24 +4,31 @@ import game.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * 判定、設定棋子 騎士
+ **/
 public class KnightPiece extends ChessPiece {
-    public KnightPiece(PieceColor color) {
+    /**
+     * 設定棋子種類、顏色
+     **/
+    public KnightPiece(final PieceColor color) {
         super(PieceType.KNIGHT, color);
     }
 
-    // 取得合法的移動範圍
-    public static List<Position> getPossibleMoves(int x, int y, ChessPiece[][] board) {
-        int[][] deltas = getMoveDeltas();
+    /**
+     * 取得合法的移動範圍
+     **/
+    public static List<Position> getPossibleMoves(final int col, final int row, final ChessPiece[][] board) {
+        final int[][] deltas = getMoveDeltas();
 
-        List<Position> result = new ArrayList<>();
-        for (int[] delta : deltas) {
-            int newX = x + delta[0];
-            int newY = y + delta[1];
+        final List<Position> result = new ArrayList<>();
+        for (final int[] delta : deltas) {
+            final int newX = col + delta[0];
+            final int newY = row + delta[1];
 
             if (ChessUtils.isValidPos(newX, newY)) {
-                ChessPiece target = board[newY][newX];
-                if (target == null || target.color != board[y][x].color) {
+                final ChessPiece target = board[newY][newX];
+                if (target == null || target.color != board[row][col].color) {
                     result.add(new Position(newX, newY, target != null)); // true if capturing
                 }
             }

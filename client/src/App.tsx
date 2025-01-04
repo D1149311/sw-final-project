@@ -1,68 +1,24 @@
-import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import LoginForm from "./components/LoginForm/LoginForm";
+import GameContextProvider from "./components/GameContext/GameContext";
+import ProtectedRoutes from "./components/ProtectedRoutes/ProtectedRoutes";
+import SignupForm from "./components/SignupForm/SignupForm";
+import Lobby from "./components/Lobby/Lobby";
 import "./App.css";
+import Game from "./components/Game/Game";
 
 function App() {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [ws, setWs] = useState<WebSocket>();
-  const [input, setInput] = useState('');
-
-  useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8081');
-
-    socket.onopen = () => {
-      console.log('WebSocket connection established');
-    };
-
-    socket.onmessage = (event) => {
-      console.log('Message from server:', event.data);
-      setMessages((prev) => [...prev, event.data]);
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    setWs(socket);
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
-  const sendMessage = () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(input);
-      setInput('');
-    } else {
-      console.error('WebSocket is not open');
-    }
-  };
-
   return (
-    <div>
-      <h1>WebSocket Example</h1>
-      <div>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter message"
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
-      <div>
-        <h2>Messages</h2>
-        <ul>
-          {messages.map((msg, index) => (
-            <li key={index}>{msg}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <GameContextProvider>
+      <Routes>
+        <Route path="login" element={<LoginForm />} />
+        <Route path="signup" element={<SignupForm />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/" index element={<Lobby />} />
+          <Route path="/game" index element={<Game />} />
+        </Route>
+      </Routes>
+    </GameContextProvider>
   );
 }
 
