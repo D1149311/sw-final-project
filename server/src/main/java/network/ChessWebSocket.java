@@ -86,6 +86,9 @@ public class ChessWebSocket extends WebSocketServer {
     }
 
     public void destroyRoom(String roomId) {
+        for (Client client : rooms.get(roomId).clients) {
+            joinRoom(client, "lobby");
+        }
         rooms.remove(roomId);
     }
 

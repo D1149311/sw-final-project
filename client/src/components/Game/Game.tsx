@@ -177,8 +177,10 @@ function Game() {
           return newBoard;
         });
       } else if (cmd === "end") {
-        alert(message);
-        navigate("/");
+        setTimeout(() => {
+          alert(message);
+          navigate("/");
+        })
       } else if (cmd === "threat") {
         if (message === "WHITE") {
           setThreat(false);
