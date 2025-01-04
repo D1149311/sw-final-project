@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 class KingPieceTest {
     @Test
-    void Test() {//國王預計有8個可動，實際有九個
+    void Test() {
         ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
         List<Position> expect = new ArrayList<>();
         for(int x = 0; x < 3; x++){
