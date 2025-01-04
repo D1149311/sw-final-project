@@ -212,7 +212,6 @@ public class ChessBoard implements IChessService {
                     break;
                 case KING:
                     possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
-//                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
                     break;
             }
 

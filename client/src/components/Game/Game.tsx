@@ -42,6 +42,7 @@ interface Square {
 
 function Game() {
   const [start, setStart] = useState<boolean>(false);
+  const [id, setId] = useState<string | null>(null);
   const [player1, setPlayer1] = useState<string>("");
   const [player2, setPlayer2] = useState<string>("");
   const [lastPosition, setLastPosition] = useState<{ x: number, y: number } | null>();
@@ -179,7 +180,7 @@ function Game() {
       } else if (cmd === "end") {
         setTimeout(() => {
           alert(message);
-          navigate("/");
+          navigate("/", {replace: true});
         })
       } else if (cmd === "threat") {
         if (message === "WHITE") {
@@ -191,6 +192,8 @@ function Game() {
         }
       } else if (cmd === "promote") {
         setPromote(true);
+      } else if (cmd === "id") {
+        setId(message);
       }
     };
   });
@@ -244,7 +247,7 @@ function Game() {
         </div>
       </div>
     ) : (
-      <div className="waiting">等待中...</div>
+      <div className="waiting"><p>等待中...</p>{id !== null ? <><br /><p>邀請號碼為{id}</p></> : <></>}</div>
     )
   )
 }

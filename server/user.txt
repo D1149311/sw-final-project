@@ -1,2 +1,2 @@
-abc def 0
-abcd abcd 0
+abc def 500
+abcd abcd 400

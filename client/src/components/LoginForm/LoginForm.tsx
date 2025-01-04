@@ -37,7 +37,7 @@ function LoginForm() {
 
                 if (message === "success") {
                     gameContext.setAuth(true);
-                    navigate("/");
+                    navigate("/", {replace: true});
                 } else {
                     console.warn(message);
                     setError(message);
