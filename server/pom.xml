@@ -44,6 +44,20 @@
             <artifactId>Java-WebSocket</artifactId>
             <version>1.3.0</version>
         </dependency>
+
+        <!-- mockito support -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version> <!-- Use the same version as mockito-core -->
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,6 +67,37 @@
             <!--                <artifactId>maven-surefire-plugin</artifactId>-->
             <!--                <version>3.0.0</version>-->
             <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.25.0</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>src/main/resources/rule_set.xml</ruleset>
+                    </rulesets>
+
+                    <format>html</format> <!-- or "html", "text", "plain", etc. -->
+
+
+                    <!-- ture will cause building fail if violate -->
+                    <failOnViolation>false</failOnViolation>
+
+                    <!-- 1 is the most critical violation;
+                         1: critical; 2: major; 3: normal;
+                         4: minor; 5: information
+                         if you set 5, the report will show all violation
+                    -->
+                    <minimumPriority> 3 </minimumPriority>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase> verify </phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.jacoco</groupId>

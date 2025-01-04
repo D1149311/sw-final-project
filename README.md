@@ -17,11 +17,6 @@
 ### 執行服務
 1. 執行server/main/java/Main.java啟動服務
 
-### 初始化(第一次用、pull後)網頁伺服器
-1. cd client
-2. npm install
-3. npm run build
-
 ### 執行網頁伺服器
 1. python3 run.py
 

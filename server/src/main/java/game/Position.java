@@ -1,29 +1,34 @@
 package game;
 
-import java.util.Objects;
 
+import java.util.Objects;  // 如果使用 Objects.hash
 
+/**
+ * 儲存棋盤上的格子
+ **/
 public class Position {
-    public int x;
-    public int y;
+    public int col;
+    public int row;
     public boolean eatable;
 
-    public Position(int x, int y, boolean eatable) {
-        this.x = x;
-        this.y = y;
+    /**
+     * 初始化Position
+     **/
+    public Position(final int col,final int row,final boolean eatable) {
+        this.col = col;
+        this.row = row;
         this.eatable = eatable;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Position position = (Position) obj;
-        return x == position.x && y == position.y;
+    public boolean equals(final Object obj) {
+        return obj instanceof Position
+                && this.col == ((Position) obj).col
+                && this.row == ((Position) obj).row;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        return Objects.hash(col, row);
     }
 }
