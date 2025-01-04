@@ -84,10 +84,10 @@ class RookPieceTest {
         // Place white rook
         board[3][3] = new RookPiece(PieceColor.WHITE);
         // Place friendly pieces as blockers
-        board[3][2] = new RookPiece(PieceColor.WHITE); // South blocker
-        board[3][6] = new RookPiece(PieceColor.WHITE); // North blocker
-        board[0][3] = new RookPiece(PieceColor.WHITE); // West blocker
-        board[5][3] = new RookPiece(PieceColor.WHITE); // East blocker
+        board[2][3] = new RookPiece(PieceColor.WHITE); // South blocker
+        board[6][3] = new RookPiece(PieceColor.WHITE); // North blocker
+        board[3][0] = new RookPiece(PieceColor.WHITE); // West blocker
+        board[3][4] = new RookPiece(PieceColor.WHITE); // East blocker
 
         List<Position> result = RookPiece.getPossibleMoves(3, 3, board);
         PositionTest.assertPosition(expect, result);
