@@ -4,8 +4,8 @@ import GameContextProvider from "./components/GameContext/GameContext";
 import ProtectedRoutes from "./components/ProtectedRoutes/ProtectedRoutes";
 import SignupForm from "./components/SignupForm/SignupForm";
 import Lobby from "./components/Lobby/Lobby";
-import "./App.css";
 import Game from "./components/Game/Game";
+import "./App.css";
 
 function App() {
   return (
