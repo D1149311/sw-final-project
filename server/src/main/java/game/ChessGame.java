@@ -2,7 +2,7 @@ package game;
 
 import java.util.Scanner;
 
-public class ChessGame {
+public class ChessGame implements IGameService {
     public static void main(String[] args) {
         ChessBoard chessBoard = new ChessBoard();
         Scanner scanner = new Scanner(System.in);
@@ -11,7 +11,7 @@ public class ChessGame {
         chessBoard.printBoard();
 
         while (true) {
-            // 在每回合開始時檢查是否將死或和局
+//             在每回合開始時檢查是否將死或和局
             if (chessBoard.isCheckmate()) {
                 System.out.println(chessBoard.turn + " is checkmated! Game over.");
                 break;
@@ -51,7 +51,7 @@ public class ChessGame {
             }
 
             // 嘗試執行移動並檢查是否成功
-            boolean success = chessBoard.move(from.x, from.y, to.x, to.y);
+            boolean success = chessBoard.move(from.col, from.row, to.col, to.row);
 
             // 如果移動成功，打印棋盤
             if (success) {
@@ -80,5 +80,10 @@ public class ChessGame {
         }
 
         return new Position(x, y, false);
+    }
+
+    @Override
+    public IChessService createGame() {
+        return new ChessBoard();
     }
 }
