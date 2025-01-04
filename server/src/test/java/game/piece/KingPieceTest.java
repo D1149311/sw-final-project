@@ -58,4 +58,18 @@ class KingPieceTest {
         List<Position> result = KingPiece.getPossibleMoves(0,0,empty_board);
         PositionTest.assertPosition(expect,result);
     }
+    @Test
+    void RookKingTest(){
+        ChessPiece[][] empty_board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expect = new ArrayList<>();
+        empty_board[0][4] = new KingPiece(PieceColor.BLACK);
+        empty_board[0][7] = new RookPiece(PieceColor.BLACK);
+        empty_board[1][4] = new PawnPiece(PieceColor.BLACK);
+        empty_board[0][3] = new QueenPiece(PieceColor.BLACK);
+        expect.add(new Position(6,0, false));
+        expect.add(new Position(5,0, false));
+
+        List<Position> result = KingPiece.getPossibleMoves(4,0,empty_board);
+        PositionTest.assertPosition(expect,result);
+    }
 }
