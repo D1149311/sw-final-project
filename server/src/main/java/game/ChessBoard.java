@@ -189,6 +189,7 @@ public class ChessBoard implements IChessService {
 
     public List<Position> getPossibleMoves(int fromX, int fromY) {
         List<Position> possibleMoves = new ArrayList<>();
+        List<Position> availableMoves = new ArrayList<>();
 
         ChessPiece piece = board[fromY][fromX];
         if (piece != null && piece.color == turn) {
@@ -210,18 +211,19 @@ public class ChessBoard implements IChessService {
                     possibleMoves = PawnPiece.getPossibleMoves(fromX, fromY, board, lastMove);
                     break;
                 case KING:
-                    List<Position> availableMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
-                    for (Position pos : availableMoves) {
-                        if (canRemoveThreat(fromX, fromY, pos.col, pos.row, board)) {
-                            possibleMoves.add(pos);
-                        }
-                    }
+                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
 //                    possibleMoves = KingPiece.getPossibleMoves(fromX, fromY, board);
                     break;
             }
+
+            for (Position pos : possibleMoves) {
+                if (canRemoveThreat(fromX, fromY, pos.col, pos.row, board)) {
+                    availableMoves.add(pos);
+                }
+            }
         }
 
-        return possibleMoves;
+        return availableMoves;
     }
 
     /**
