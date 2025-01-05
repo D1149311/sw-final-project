@@ -1,72 +1,99 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.example</groupId>
     <artifactId>FinalChess</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
-
-        <!-- JUnit 5 -->
+        <!--  JUnit 5  -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.11.0</version>
         </dependency>
-
-        <!--  Using org.apache.commons.lang3.StringUtils; -->
+        <!--  JUnit 4 Dependency  -->
+        <!--         <dependency> -->
+        <!--             <groupId>junit</groupId> -->
+        <!--             <artifactId>junit</artifactId> -->
+        <!--             <version>4.13.2</version> -->
+        <!--             <scope>test</scope> -->
+        <!--         </dependency> -->
+        <!--   Using org.apache.commons.lang3.StringUtils;  -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.13.0</version>
         </dependency>
-
-
-        <!-- read JSON file -->
+        <!--  read JSON file  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.17.1</version>
         </dependency>
-
-        <!-- websocket support -->
+        <!--  websocket support  -->
         <dependency>
             <groupId>org.java-websocket</groupId>
             <artifactId>Java-WebSocket</artifactId>
             <version>1.3.0</version>
         </dependency>
-
-        <!-- mockito support -->
+        <!--  mockito support  -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>5.12.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.12.0</version> <!-- Use the same version as mockito-core -->
+            <version>5.12.0</version>
+            <!--  Use the same version as mockito-core  -->
+        </dependency>
+        <!--  Selenium WebDriver  -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.12.0</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-surefire-plugin</artifactId>-->
-            <!--                <version>3.0.0</version>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <!--  Pitest Plugin Configuration for JUnit 4  -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.15.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>game.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>game.*Test</param>
+                    </targetTests>
+                    <mutators>STRONGER</mutators>
+                    <threads>4</threads>
+                    <!--                     <timeoutConst>500</timeoutConst> -->
+                    <outputFormats>
+                        <param>HTML</param>
+                    </outputFormats>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -75,18 +102,15 @@
                     <rulesets>
                         <ruleset>src/main/resources/rule_set.xml</ruleset>
                     </rulesets>
-
-                    <format>html</format> <!-- or "html", "text", "plain", etc. -->
-
-
-                    <!-- ture will cause building fail if violate -->
+                    <format>html</format>
+                    <!--  or "html", "text", "plain", etc.  -->
+                    <!--  ture will cause building fail if violate  -->
                     <failOnViolation>false</failOnViolation>
-
-                    <!-- 1 is the most critical violation;
-                         1: critical; 2: major; 3: normal;
-                         4: minor; 5: information
-                         if you set 5, the report will show all violation
-                    -->
+                    <!--  1 is the most critical violation;
+                                             1: critical; 2: major; 3: normal;
+                                             4: minor; 5: information
+                                             if you set 5, the report will show all violation
+                                         -->
                     <minimumPriority> 3 </minimumPriority>
                 </configuration>
                 <executions>
@@ -98,12 +122,10 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
-
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -120,28 +142,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Pitest Plugin Configuration for JUnit 4 -->
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>1.9.11</version>
-                <configuration>
-                    <targetClasses>
-                        <param>game.piece.*</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>game.piece.*Test</param>
-                    </targetTests>
-                    <mutators>STRONGER</mutators>
-                    <threads>4</threads>
-                    <!--                    <timeoutConst>4000</timeoutConst>-->
-                    <outputFormats>
-                        <param>HTML</param>
-                    </outputFormats>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
 </project>
