@@ -120,6 +120,27 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Pitest Plugin Configuration for JUnit 4 -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.9.11</version>
+                <configuration>
+                    <targetClasses>
+                        <param>game.piece.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>game.piece.*Test</param>
+                    </targetTests>
+                    <mutators>STRONGER</mutators>
+                    <threads>4</threads>
+                    <!--                    <timeoutConst>4000</timeoutConst>-->
+                    <outputFormats>
+                        <param>HTML</param>
+                    </outputFormats>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
