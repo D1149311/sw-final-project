@@ -36,10 +36,10 @@ class PawnPieceTest {
         List<Position> expected = new ArrayList<>();
         board[2][1] = new PawnPiece(PieceColor.WHITE);
         board[1][0] = new PawnPiece(PieceColor.BLACK);
-        expected.add(new Position(0, 1, true)); // Capture left diagonal
-        expected.add(new Position(1, 1, false)); // Capture right diagonal
-        expected.add(new Position(1, 0, false)); // Single forward move
-        List<Position> result = PawnPiece.getPossibleMoves(1, 2, board, null);
+        expected.add(new Position(0, 2, false)); // Capture left diagonal
+        expected.add(new Position(0, 3, false)); // Capture right diagonal
+        expected.add(new Position(1, 2, true)); // Single forward move
+        List<Position> result = PawnPiece.getPossibleMoves(0, 1, board, null);
         PositionTest.assertPosition(expected, result);
     }
 

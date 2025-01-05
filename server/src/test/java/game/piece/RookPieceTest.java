@@ -51,10 +51,10 @@ class RookPieceTest {
         List<Position> expect = new ArrayList<>();
 
         // Setup captures in all four directions
-        expect.add(new Position(3, 4, false)); // North
-        expect.add(new Position(4, 3, false)); // East
-        expect.add(new Position(3, 2, false)); // South
-        expect.add(new Position(2, 3, false)); // West
+        expect.add(new Position(3, 4, true)); // North
+        expect.add(new Position(4, 3, true)); // East
+        expect.add(new Position(3, 2, true)); // South
+        expect.add(new Position(2, 3, true)); // West
 
         // Place white rook
         board[3][3] = new RookPiece(PieceColor.WHITE);
