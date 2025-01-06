@@ -4,13 +4,21 @@ import storage.UserService;
 
 import java.io.IOException;
 
-public class Main {
-    public static int PORT = 8081;
+/**
+ * Chess websocket server entry class
+ */
+public final class Main {
+    public static final int PORT = 8081;
 
+    private Main() {}
+
+    /**
+     * Chess websocket server entry
+     */
     public static void main(String[] args) throws InterruptedException, IOException {
-        ChessGame gameService = new ChessGame();
-        UserService userService = new UserService();
-        ChessWebSocket server = new ChessWebSocket(PORT, userService, gameService);
+        final ChessGame gameService = new ChessGame();
+        final UserService userService = new UserService("user.txt");
+        final ChessWebSocket server = new ChessWebSocket(PORT, userService, gameService);
 
         try {
             server.start();
@@ -21,8 +29,6 @@ public class Main {
                 // 阻止任何輸入，實際上等待用戶按下鍵，但不處理輸入
                 System.in.read();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             server.stop();
         }

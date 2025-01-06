@@ -8,37 +8,53 @@ import storage.User;
 
 import java.util.List;
 
+/**
+ * Chess game room
+ */
 public class GameRoom extends Room {
     private Client black, white;
     private IChessService chessService;
-    private boolean gameOver = false;
-    public int point = 0;
+    private boolean gameOver;
+    public int point;
 
-    public GameRoom(String id, ChessWebSocket controller) {
-        super(id, controller);
+    private static final String POSSIBLE_COMMAND = "possible";
+    private static final String MOVE_COMMAND = "move";
+    private static final String PROMOTE_COMMAND = "promote";
+
+    private static final String QUEEN = "QUEEN";
+    private static final String BISHOP = "BISHOP";
+    private static final String KNIGHT = "KNIGHT";
+    private static final String ROOK = "ROOK";
+
+    private static final int MAX_CLIENTS = 2;
+
+    /**
+     * Initialize the game room
+     */
+    public GameRoom(final String roomId, final ChessWebSocket controller) {
+        super(roomId, controller);
     }
 
     @Override
-    public void addClient(Client client) {
+    public void addClient(final Client client) {
         super.addClient(client);
 
-        System.out.println("add client to game room");
-        if (this.clients.size() == 2) {
+        if (this.clients.size() == MAX_CLIENTS) {
             white = this.clients.get(1);
             black = this.clients.get(0);
 
-            white.conn.send("start " + white.id + " " + black.id);
-            black.conn.send("start " + white.id + " " + black.id);
+            white.conn.send("start " + white.userId + " " + black.userId);
+            black.conn.send("start " + white.userId + " " + black.userId);
 
             chessService = controller.gameService.createGame();
 
-            StringBuilder result = new StringBuilder("move ");
+            final StringBuilder result = new StringBuilder("move ");
 
-            ChessPiece[][] board = chessService.getBoard();
+            final ChessPiece[][] board = chessService.getBoard();
             for (int row = 0; row < 8; row++) {
                 for (int col = 0; col < 8; col++) {
                     if (board[row][col] != null) {
-                        result.append(board[row][col].color + " " + board[row][col].type + " ");
+                        result.append(board[row][col].color).append(' ').append(board[row][col].type).append(' ');
                     } else {
                         result.append("null null ");
                     }
@@ -51,156 +67,160 @@ public class GameRoom extends Room {
     }
 
     @Override
-    public void removeClient(Client client) {
+    public void removeClient(final Client client) {
         super.removeClient(client);
 
         if (!gameOver) {
             gameOver = true;
-            Client winner = (client == white ? black : white);
-            User user = controller.userService.findUserById(winner.id);
-            user.point = String.valueOf(Integer.parseInt(user.point) + point);
-            controller.userService.save();
-            controller.destroyRoom(id);
-            winner.conn.send("end " + client.id + " leave the room");
+            controller.destroyRoom(roomId);
+            final Client winner = (client.equals(white) ? black : white);
+            if (winner != null) {
+                final User user = controller.userService.findUserById(winner.userId);
+                user.point = String.valueOf(Integer.parseInt(user.point) + point);
+                controller.userService.save();
+                winner.conn.send("end " + client.userId + " leave the room");
+            }
         }
     }
 
     @Override
-    public void processMessage(Client client, String message) {
+    public void processMessage(final Client client, final String message) {
         super.processMessage(client, message);
 
-        String[] msg = message.split(" ");
-        if (msg[0].equals("possible")) {
-            StringBuilder result = new StringBuilder("possible ");
+        final String[] msg = message.split(" ");
 
-            int x = Integer.parseInt(msg[1]);
-            int y = Integer.parseInt(msg[2]);
+        if (clients.size() < MAX_CLIENTS) {
+            client.conn.send(msg[0] + " unknown command");
+        } else {
 
-            if (chessService.getTurn() == (client == white ? PieceColor.WHITE : PieceColor.BLACK)) {
-                List<Position> positionList = chessService.getPossibleMoves(x, y);
-                positionList.forEach((value) -> {
-                    result.append(value.col);
-                    result.append(" ");
-                    result.append(value.row);
-                    result.append(" ");
-                    result.append(value.eatable);
-                    result.append(" ");
-                });
-            }
-            client.conn.send(String.valueOf(result));
-        } else if (msg[0].equals("move")) {
-            if (chessService.getTurn() == (client == white ? PieceColor.WHITE : PieceColor.BLACK)) {
-                int fromX = Integer.parseInt(msg[1]);
-                int fromY = Integer.parseInt(msg[2]);
-                int toX = Integer.parseInt(msg[3]);
-                int toY = Integer.parseInt(msg[4]);
-                boolean valid = chessService.move(fromX, fromY, toX, toY);
-                if (valid) {
-                    StringBuilder result = new StringBuilder("move ");
+            if (POSSIBLE_COMMAND.equals(msg[0])) {
+                final StringBuilder result = new StringBuilder("possible ");
 
-                    ChessPiece[][] board = chessService.getBoard();
-                    for (int row = 0; row < 8; row++) {
-                        for (int col = 0; col < 8; col++) {
-                            if (board[row][col] != null) {
-                                result.append(board[row][col].color + " " + board[row][col].type + " ");
-                            } else {
-                                result.append("null null ");
+                final int col = Integer.parseInt(msg[1]);
+                final int row = Integer.parseInt(msg[2]);
+
+                if (chessService.getTurn() == (client.equals(white) ? PieceColor.WHITE : PieceColor.BLACK)) {
+                    final List<Position> positionList = chessService.getPossibleMoves(col, row);
+                    positionList.forEach((value) -> {
+                        result.append(value.col).append(' ').append(value.row).append(' ').append(value.eatable).append(' ');
+                    });
+                }
+                client.conn.send(String.valueOf(result));
+            } else if (MOVE_COMMAND.equals(msg[0])) {
+                if (chessService.getTurn() == (client.equals(white) ? PieceColor.WHITE : PieceColor.BLACK)) {
+                    final int fromX = Integer.parseInt(msg[1]);
+                    final int fromY = Integer.parseInt(msg[2]);
+                    final int toX = Integer.parseInt(msg[3]);
+                    final int toY = Integer.parseInt(msg[4]);
+                    final boolean valid = chessService.move(fromX, fromY, toX, toY);
+                    if (valid) {
+                        final StringBuilder result = new StringBuilder("move ");
+
+                        final ChessPiece[][] board = chessService.getBoard();
+                        for (int row = 0; row < 8; row++) {
+                            for (int col = 0; col < 8; col++) {
+                                if (board[row][col] != null) {
+                                    result.append(board[row][col].color).append(' ').append(board[row][col].type).append(' ');
+                                } else {
+                                    result.append("null null ");
+                                }
                             }
                         }
-                    }
 
-                    white.conn.send(String.valueOf(result));
-                    black.conn.send(String.valueOf(result));
+                        white.conn.send(String.valueOf(result));
+                        black.conn.send(String.valueOf(result));
 
-                    if (chessService.requestingPromote()) {
-                        client.conn.send("promote");
-                    } else if (chessService.isCheckmate()) {
-                        gameOver = true;
-                        User user = controller.userService.findUserById(client.id);
-                        user.point = String.valueOf(Integer.parseInt(user.point) + point);
-                        controller.userService.save();
-                        controller.destroyRoom(id);
-                        white.conn.send("end " + chessService.getTurn() + " is checkmated!");
-                        black.conn.send("end " + chessService.getTurn() + " is checkmated!");
-                    } else if (chessService.isDraw()) {
-                        gameOver = true;
-                        controller.destroyRoom(id);
-                        white.conn.send("end " + "The game is a draw!");
-                        black.conn.send("end " + "The game is a draw!");
+                        if (chessService.requestingPromote()) {
+                            client.conn.send("promote");
+                        } else if (chessService.isCheckmate()) {
+                            gameOver = true;
+                            final User user = controller.userService.findUserById(client.userId);
+                            user.point = String.valueOf(Integer.parseInt(user.point) + point);
+                            controller.userService.save();
+                            controller.destroyRoom(roomId);
+                            white.conn.send("end " + chessService.getTurn() + " is checkmated!");
+                            black.conn.send("end " + chessService.getTurn() + " is checkmated!");
+                        } else if (chessService.isDraw()) {
+                            gameOver = true;
+                            controller.destroyRoom(roomId);
+                            white.conn.send("end The game is a draw!");
+                            black.conn.send("end The game is a draw!");
+                        } else {
+                            if (chessService.isKingThreatened(PieceColor.BLACK)) {
+                                white.conn.send("threat BLACK");
+                                black.conn.send("threat BLACK");
+                            }
+                            if (chessService.isKingThreatened(PieceColor.WHITE)) {
+                                white.conn.send("threat WHITE");
+                                black.conn.send("threat WHITE");
+                            }
+                        }
                     } else {
-                        if (chessService.isKingThreatened(PieceColor.BLACK)) {
-                            white.conn.send("threat " + "BLACK");
-                            black.conn.send("threat " + "BLACK");
-                        }
-                        if (chessService.isKingThreatened(PieceColor.WHITE)) {
-                            white.conn.send("threat " + "WHITE");
-                            black.conn.send("threat " + "WHITE");
-                        }
+                        client.conn.send("move invalid");
                     }
+                } else {
+                    client.conn.send("move invalid");
+                }
+            } else if ((chessService.getTurn() == (client.equals(white) ? PieceColor.WHITE : PieceColor.BLACK)) && PROMOTE_COMMAND.equals(msg[0])) {
+                // promote pawn
+                if (QUEEN.equals(msg[1])) {
+                    chessService.promotePawn(PieceType.QUEEN);
+                } else if (BISHOP.equals(msg[1])) {
+                    chessService.promotePawn(PieceType.BISHOP);
+                } else if (KNIGHT.equals(msg[1])) {
+                    chessService.promotePawn(PieceType.KNIGHT);
+                } else if (ROOK.equals(msg[1])) {
+                    chessService.promotePawn(PieceType.ROOK);
+                }
 
+                if (chessService.requestingPromote()) {
                     return;
                 }
-            }
-            client.conn.send("move invalid");
-        } else if (msg[0].equals("promote")) {
-            // promote pawn
-            if (msg[1].equals("QUEEN")) {
-                chessService.promotePawn(PieceType.QUEEN);
-            } else if (msg[1].equals("BISHOP")) {
-                chessService.promotePawn(PieceType.BISHOP);
-            } else if (msg[1].equals("KNIGHT")) {
-                chessService.promotePawn(PieceType.KNIGHT);
-            } else if (msg[1].equals("ROOK")) {
-                chessService.promotePawn(PieceType.ROOK);
-            }
 
-            if (chessService.requestingPromote()) {
-                return;
-            }
+                // update board
+                final StringBuilder result = new StringBuilder("move ");
 
-            // update board
-            StringBuilder result = new StringBuilder("move ");
-
-            ChessPiece[][] board = chessService.getBoard();
-            for (int row = 0; row < 8; row++) {
-                for (int col = 0; col < 8; col++) {
-                    if (board[row][col] != null) {
-                        result.append(board[row][col].color + " " + board[row][col].type + " ");
-                    } else {
-                        result.append("null null ");
+                final ChessPiece[][] board = chessService.getBoard();
+                for (int row = 0; row < 8; row++) {
+                    for (int col = 0; col < 8; col++) {
+                        if (board[row][col] != null) {
+                            result.append(board[row][col].color).append(' ').append(board[row][col].type).append(' ');
+                        } else {
+                            result.append("null null ");
+                        }
                     }
                 }
-            }
 
-            white.conn.send(String.valueOf(result));
-            black.conn.send(String.valueOf(result));
+                white.conn.send(String.valueOf(result));
+                black.conn.send(String.valueOf(result));
 
-            // check whether the game is over
-            if (chessService.isCheckmate()) {
-                gameOver = true;
-                User user = controller.userService.findUserById(client.id);
-                user.point = String.valueOf(Integer.parseInt(user.point) + point);
-                controller.userService.save();
-                controller.destroyRoom(id);
-                white.conn.send("end " + chessService.getTurn() + " is checkmated!");
-                black.conn.send("end " + chessService.getTurn() + " is checkmated!");
-            } else if (chessService.isDraw()) {
-                gameOver = true;
-                controller.destroyRoom(id);
-                white.conn.send("end " + "The game is a draw!");
-                black.conn.send("end " + "The game is a draw!");
+                // check whether the game is over
+                if (chessService.isCheckmate()) {
+                    gameOver = true;
+                    final User user = controller.userService.findUserById(client.userId);
+                    user.point = String.valueOf(Integer.parseInt(user.point) + point);
+                    controller.userService.save();
+                    controller.destroyRoom(roomId);
+                    white.conn.send("end " + chessService.getTurn() + " is checkmated!");
+                    black.conn.send("end " + chessService.getTurn() + " is checkmated!");
+                } else if (chessService.isDraw()) {
+                    gameOver = true;
+                    controller.destroyRoom(roomId);
+                    white.conn.send("end The game is a draw!");
+                    black.conn.send("end The game is a draw!");
+                } else {
+                    if (chessService.isKingThreatened(PieceColor.BLACK)) {
+                        white.conn.send("threat BLACK");
+                        black.conn.send("threat BLACK");
+                    }
+                    if (chessService.isKingThreatened(PieceColor.WHITE)) {
+                        white.conn.send("threat WHITE");
+                        black.conn.send("threat WHITE");
+                    }
+                }
             } else {
-                if (chessService.isKingThreatened(PieceColor.BLACK)) {
-                    white.conn.send("threat " + "BLACK");
-                    black.conn.send("threat " + "BLACK");
-                }
-                if (chessService.isKingThreatened(PieceColor.WHITE)) {
-                    white.conn.send("threat " + "WHITE");
-                    black.conn.send("threat " + "WHITE");
-                }
+                client.conn.send(msg[0] + " unknown command");
             }
-        } else {
-            client.conn.send(msg[0] + " unknown command");
         }
     }
 }

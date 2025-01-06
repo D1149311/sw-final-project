@@ -1,30 +1,43 @@
 package network;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * The room should extend from it
+ */
 public class Room {
-    public String id;
+    public String roomId;
     public List<Client> clients;
     public ChessWebSocket controller;
 
-    public Room(String id, ChessWebSocket controller) {
-        this.id = id;
+    /**
+     * Initialize the room
+     */
+    public Room(final String roomId, final ChessWebSocket controller) {
+        this.roomId = roomId;
         this.clients = new ArrayList<>();
         this.controller = controller;
     }
 
-    public void addClient(Client client) {
+    /**
+     * add client to the room
+     */
+    public void addClient(final Client client) {
         clients.add(client);
-        System.out.println("add client to the room");
     }
 
-    public void removeClient(Client client) {
+    /**
+     * remove client from the room
+     */
+    public void removeClient(final Client client) {
         clients.remove(client);
     }
 
-    public void processMessage(Client client, String message) { }
+    /**
+     * process the message from websocket
+     */
+    public void processMessage(final Client client, final String message) {
+        // It should complete by room
+    }
 }

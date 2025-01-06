@@ -1,6 +1,8 @@
 package game;
 
 import game.piece.*;
+import org.checkerframework.checker.index.qual.PolyUpperBound;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +14,11 @@ public class ChessBoard implements IChessService {
     public ChessPiece[][] board;
     public PieceColor turn;
     private Position lastMove;
-    private boolean requestPromote = false;
-    private ChessPiece promotePawn;
+    private boolean requestPromote;
+    private ChessPiece promotedPawn;
     private int promoteX, promoteY;
+
+    public static final int MAX_PIECE_SYMBOL = 2;
 
     /**
      * 初始化棋盤
@@ -24,12 +28,18 @@ public class ChessBoard implements IChessService {
         initializeGame();
     }
 
+    @Override
     public PieceColor getTurn() {
         return this.turn;
     }
 
+    @Override
     public ChessPiece[][] getBoard() {
-        return this.board;
+        final ChessPiece[][] copy = new ChessPiece[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            copy[i] = board[i].clone(); // Shallow copy for each row
+        }
+        return copy;
     }
 
     private void initializeBoard() {
@@ -65,20 +75,22 @@ public class ChessBoard implements IChessService {
     private void initializeGame() {
         turn = PieceColor.WHITE;
     }
+
     /**
      * 檢查己方的國王是否受到威脅
      **/
+    @Override
     public boolean isKingThreatened(final PieceColor currentColor) {
         boolean result = false;
         // 獲取對手的棋子
         final PieceColor opponentColor = currentColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
         // 查找對方棋子攻擊範圍
-        for (int y = 0; y < ChessUtils.BOARD_SIZE; y++) {
-            for (int x = 0; x < ChessUtils.BOARD_SIZE; x++) {
-                final ChessPiece piece = board[y][x];
+        for (int row = 0; row < ChessUtils.BOARD_SIZE; row++) {
+            for (int col = 0; col < ChessUtils.BOARD_SIZE; col++) {
+                final ChessPiece piece = board[row][col];
                 if (piece != null && piece.color == opponentColor) {
-                    final List<Position> attackRange = getAttackRangeForPiece(piece, x, y);
+                    final List<Position> attackRange = getAttackRangeForPiece(piece, col, row);
                     for (final Position pos : attackRange) {
                         // 檢查是否對方的攻擊範圍包含自己的國王
                         if (board[pos.row][pos.col] != null && board[pos.row][pos.col].type == PieceType.KING &&
@@ -187,11 +199,58 @@ public class ChessBoard implements IChessService {
         return copy;
     }
 
-    public List<Position> getPossibleMoves(int fromX, int fromY) {
-        List<Position> possibleMoves = new ArrayList<>();
-        List<Position> availableMoves = new ArrayList<>();
+    private boolean isUnderAttack(final int toX, final int toY, final PieceColor color) {
+        boolean result = false;
+        // 遍歷整個棋盤
+        for (int i = 0; i < board.length && !result; i++) {
+            for (int j = 0; j < board[i].length && !result; j++) {
+                final ChessPiece piece = board[i][j];
+                // 如果是對方的棋子，檢查它的可攻擊範圍
+                if (piece != null && piece.color != color) {
+                    final List<Position> enemyMoves = getAttackRangeForPiece(piece, j, i); // 獲取該棋子的所有合法移動
+                    for (final Position pos : enemyMoves) {
+                        if (pos.col == toX && pos.row == toY) {
+                            result = true; // 如果目標位置在對方棋子的攻擊範圍內
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result; // 如果沒有任何對方棋子能攻擊該位置
+    }
 
-        ChessPiece piece = board[fromY][fromX];
+    private boolean isValidCastling(final int kingX, final int kingY, final int targetX) {
+        boolean result = true;
+        final int rookX = (targetX == 6) ? 7 : 0;
+        final int direction = (targetX == 6) ? 1 : -1;
+
+        // 檢查國王和對應車是否已經移動過
+        final ChessPiece rook = board[kingY][rookX];
+        if (rook == null || rook.type != PieceType.ROOK || rook.color != turn || ((RookPiece) rook).hasMoved()) {
+            result = false;
+        }
+
+        // 檢查國王移動路徑是否被阻擋或處於攻擊中
+        for (int x = kingX + direction; x != rookX; x += direction) {
+            if (board[kingY][x] != null || isUnderAttack(x, kingY, turn)) {
+                result = false;
+                break;
+            }
+        }
+
+        // 檢查國王是否會經過或停在被攻擊的位置
+        return result && (!isUnderAttack(kingX, kingY, turn) &&
+                !isUnderAttack(kingX + direction, kingY, turn) &&
+                !isUnderAttack(targetX, kingY, turn));
+    }
+
+    @Override
+    public List<Position> getPossibleMoves(final int fromX, final int fromY) {
+        List<Position> possibleMoves = new ArrayList<>();
+        final List<Position> availableMoves = new ArrayList<>();
+
+        final ChessPiece piece = board[fromY][fromX];
         if (piece != null && piece.color == turn) {
             // 判斷是否是可以移動的棋子
             switch (piece.type) {
@@ -215,19 +274,36 @@ public class ChessBoard implements IChessService {
                     break;
             }
 
-            for (Position pos : possibleMoves) {
+            for (final Position pos : possibleMoves) {
                 if (canRemoveThreat(fromX, fromY, pos.col, pos.row, board)) {
                     availableMoves.add(pos);
                 }
             }
+
+            if (piece.type == PieceType.KING && !((KingPiece) piece).hasMoved()) {
+                // 檢查右側易位
+                if (fromX == 4 && isValidCastling(fromX, fromY, 6)) {
+                    final Position castleRight = new Position(6, fromY, false);
+                    System.out.println("Adding castling move to the right: " + castleRight);
+                    availableMoves.add(castleRight);
+                }
+                // 檢查左側易位
+                if (fromX == 4 && isValidCastling(fromX, fromY, 2)) {
+                    final Position castleLeft = new Position(2, fromY, false);
+                    System.out.println("Adding castling move to the left: " + castleLeft);
+                    availableMoves.add(castleLeft);
+                }
+            }
         }
 
+        System.out.println("Available moves: " + availableMoves);
         return availableMoves;
     }
 
     /**
      * 旗子的移動邏輯
      **/
+    @Override
     public boolean move(final int fromX, final int fromY, final int toX, final int toY) {
         boolean result = false;  // Variable to store the result
 
@@ -239,7 +315,7 @@ public class ChessBoard implements IChessService {
                 System.out.println("You cannot make this move because your king is still under threat.");
             } else {
                 final ChessPiece piece = board[fromY][fromX];
-                List<Position> possibleMoves = getPossibleMoves(fromX, fromY);
+                final List<Position> possibleMoves = getAttackRangeForPiece(piece, fromX, fromY);
                 boolean canMove = false;
 
                 // Check if the move is valid
@@ -271,6 +347,7 @@ public class ChessBoard implements IChessService {
                             board[toY][(fromX == 4 && toX == 6) ? 7 : 0] = null;
                             ((RookPiece) board[toY][rookDestX]).setHasMoved();
                             ((KingPiece) board[toY][kingDestX]).setHasMoved();
+                            turn = turn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
                             result = true;  // Set result to true as castling is valid
                         }
                     }
@@ -282,7 +359,7 @@ public class ChessBoard implements IChessService {
                         final PawnPiece pawn = (PawnPiece) piece;
                         if (shouldPromotePawn(pawn, toY)) {
                             requestPromote = true;
-                            promotePawn = pawn;
+                            promotedPawn = pawn;
                             promoteX = toX;
                             promoteY = toY;
                             board[toY][toX] = board[fromY][fromX];
@@ -343,6 +420,7 @@ public class ChessBoard implements IChessService {
                 || (pawn.color == PieceColor.BLACK && toY == ChessUtils.BOARD_SIZE - 1);
     }
 
+    @Override
     public boolean requestingPromote() {
         return requestPromote;
     }
@@ -350,22 +428,27 @@ public class ChessBoard implements IChessService {
     /**
      * 處理兵的升變邏輯。
      */
-    public void promotePawn(PieceType choice) {
-        if (!this.requestPromote) return;
+    @Override
+    public void promotePawn(final PieceType choice) {
+        if (!this.requestPromote) {
+            return;
+        }
 
         ChessPiece promotedPiece = null;
         switch (choice) {
-            case PieceType.QUEEN:
-                promotedPiece = new QueenPiece(promotePawn.color);
+            case QUEEN:
+                promotedPiece = new QueenPiece(promotedPawn.color);
                 break;
-            case PieceType.ROOK:
-                promotedPiece = new RookPiece(promotePawn.color);
+            case ROOK:
+                promotedPiece = new RookPiece(promotedPawn.color);
                 break;
-            case PieceType.BISHOP:
-                promotedPiece = new BishopPiece(promotePawn.color);
+            case BISHOP:
+                promotedPiece = new BishopPiece(promotedPawn.color);
                 break;
-            case PieceType.KNIGHT:
-                promotedPiece = new KnightPiece(promotePawn.color);
+            case KNIGHT:
+                promotedPiece = new KnightPiece(promotedPawn.color);
+                break;
+            default:
                 break;
         }
 
@@ -435,6 +518,7 @@ public class ChessBoard implements IChessService {
     /**
      * 檢查棋局是否和局
      **/
+    @Override
     public boolean isDraw() {
         boolean result = false;
         // 1. 判斷是否無法合法移動（悶死局面）
@@ -455,6 +539,7 @@ public class ChessBoard implements IChessService {
     /**
      * 檢查棋局是否將死
      **/
+    @Override
     public boolean isCheckmate() {
         boolean result = false;
         if (isKingThreatened(turn) && !hasLegalMoves(turn)) {
@@ -479,9 +564,9 @@ public class ChessBoard implements IChessService {
                 if (board[y][x] == null) {
                     System.out.print(".   "); // 空格用 "." 表示
                 } else {
-                    final String pieceSymbol = board[y][x].color.toString().charAt(0) + "" + board[y][x].type.toString().charAt(0);
+                    final String pieceSymbol = String.valueOf(board[y][x].color.toString().charAt(0) + board[y][x].type.toString().charAt(0));
                     System.out.print(pieceSymbol + " "); // 棋子符號
-                    if (pieceSymbol.length() == 2) {
+                    if (pieceSymbol.length() == MAX_PIECE_SYMBOL) {
                         System.out.print(" "); // 添加額外空格保持對齊
                     }
                 }

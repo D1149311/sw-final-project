@@ -5,29 +5,36 @@ import network.Client;
 import network.Room;
 import storage.User;
 
-import java.lang.reflect.InvocationTargetException;
-
+/**
+ * Allow user login or register
+ */
 public class AuthRoom extends Room {
-    public AuthRoom(ChessWebSocket controller) {
+    private static final String LOGIN_COMMAND = "login";
+    private static final String SIGNUP_COMMAND = "signup";
+
+    /**
+     * Initialize the room
+     */
+    public AuthRoom(final ChessWebSocket controller) {
         super("auth", controller);
     }
 
     @Override
-    public void processMessage(Client client, String message) {
+    public void processMessage(final Client client, final String message) {
         super.processMessage(client, message);
 
-        String[] msg = message.split(" ");
-        if (msg[0].equals("login")) {
-            User user = controller.userService.findUserById(msg[1]);
+        final String[] msg = message.split(" ");
+        if (LOGIN_COMMAND.equals(msg[0])) {
+            final User user = controller.userService.findUserById(msg[1]);
             if (user != null && user.password.equals(msg[2])) {
                 client.conn.send("login success");
-                client.id = msg[1];
+                client.userId = msg[1];
                 controller.joinRoom(client, "lobby");
             } else {
                 client.conn.send("login wrong username or password");
             }
-        } else if (msg[0].equals("signup")) {
-            User user = controller.userService.findUserById(msg[1]);
+        } else if (SIGNUP_COMMAND.equals(msg[0])) {
+            final User user = controller.userService.findUserById(msg[1]);
             if (user == null) {
                 client.conn.send("signup success");
                 controller.userService.createUser(msg[1], msg[2]);
