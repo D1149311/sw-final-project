@@ -30,22 +30,22 @@ class PawnPieceTest {
         List<Position> result = PawnPiece.getPossibleMoves(0, 6, board, null);
         PositionTest.assertPosition(expected, result);
     }
-//
-//    @Test
-//    void testPawnCapture() {
-//        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-//        List<Position> expected = new ArrayList<>();
-//        board[4][4] = new PawnPiece(PieceColor.WHITE);
-//        board[3][3] = new PawnPiece(PieceColor.BLACK); // Diagonal left
-//        board[3][5] = new PawnPiece(PieceColor.BLACK); // Diagonal right
-//        expected.add(new Position(5, 3, true)); // Capture diagonal left
-//        expected.add(new Position(3, 3, true)); // Capture diagonal right
-//        expected.add(new Position(4, 3, false)); // Single forward move
-//        expected.add(new Position(4, 2, false)); // Double forward move
-//
-//        List<Position> result = PawnPiece.getPossibleMoves(4, 4, board, null);
-//        PositionTest.assertPosition(expected, result);
-//    }
+//怪怪的，前面兩個應該可以吃 後面兩個應該不能吃
+    @Test
+    void testPawnCapture() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        List<Position> expected = new ArrayList<>();
+        board[4][4] = new PawnPiece(PieceColor.WHITE);
+        board[3][3] = new PawnPiece(PieceColor.BLACK); // Diagonal left
+        board[3][5] = new PawnPiece(PieceColor.BLACK); // Diagonal right
+        expected.add(new Position(5, 3, true)); // Capture diagonal right
+        expected.add(new Position(3, 3, true)); // Capture diagonal left
+        expected.add(new Position(4, 3, false)); // Single forward move
+        expected.add(new Position(4, 2, false)); // Double forward move
+
+        List<Position> result = PawnPiece.getPossibleMoves(4, 4, board, null);
+        PositionTest.assertPosition(expected, result);
+    }
 
     @Test
     void testBlockedPawn() {
