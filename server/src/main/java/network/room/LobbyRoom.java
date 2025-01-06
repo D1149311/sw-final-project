@@ -6,48 +6,60 @@ import network.Room;
 import storage.User;
 
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * allow user to create a game room
+ */
 public class LobbyRoom extends Room {
     private Client waiting;
 
-    public LobbyRoom(ChessWebSocket controller) {
+    private static final String COMMAND_PLAY = "play";
+    private static final String COMMAND_TOP10 = "top10";
+    private static final String COMMAND_LOGOUT = "logout";
+    private static final String COMMAND_INFO = "info";
+    private static final String MODE_ONLINE = "online";
+    private static final String MODE_CREATE = "create";
+    private static final String MODE_FRIEND = "friend";
+
+    /**
+     * Initialize the room
+     */
+    public LobbyRoom(final ChessWebSocket controller) {
         super("lobby", controller);
     }
 
     @Override
-    public void processMessage(Client client, String message) {
+    public void processMessage(final Client client, final String message) {
         super.processMessage(client, message);
 
-        String[] msg = message.split(" ");
-        if (msg[0].equals("play")) {
-            if (client == waiting) {
+        final String[] msg = message.split(" ");
+        if (COMMAND_PLAY.equals(msg[0])) {
+            if (client.equals(waiting)) {
                 client.conn.send("play unknown command");
                 return;
             }
 
-            if (Objects.equals(msg[1], "online")) {
+            if (MODE_ONLINE.equals(msg[1])) {
                 client.conn.send("play success");
 
                 if (waiting == null) {
                     waiting = client;
                 } else {
-                    String id = controller.createRoom();
-                    controller.joinRoom(waiting, id);
-                    controller.joinRoom(client, id);
-                    ((GameRoom) controller.rooms.get(id)).point = 100;
+                    final String roomId = controller.createRoom();
+                    controller.joinRoom(waiting, roomId);
+                    controller.joinRoom(client, roomId);
+                    ((GameRoom) controller.rooms.get(roomId)).point = 100;
                     waiting = null;
                 }
-            } else if (Objects.equals(msg[1], "create")) {
+            } else if (MODE_CREATE.equals(msg[1])) {
                 client.conn.send("play success");
 
-                String id = controller.createRoom();
-                client.conn.send("id " + id);
-                controller.joinRoom(client, id);
-            } else if (Objects.equals(msg[1], "friend")) {
-                GameRoom room = (GameRoom) controller.rooms.get(msg[2]);
+                final String roomId = controller.createRoom();
+                client.conn.send("id " + roomId);
+                controller.joinRoom(client, roomId);
+            } else if (MODE_FRIEND.equals(msg[1])) {
+                final GameRoom room = (GameRoom) controller.rooms.get(msg[2]);
                 if (room != null && room.point == 0 && room.clients.size() < 2) {
-                    System.out.println();
                     client.conn.send("play success");
                     controller.joinRoom(client, msg[2]);
                 } else {
@@ -56,30 +68,30 @@ public class LobbyRoom extends Room {
             } else {
                 client.conn.send("play unknown command");
             }
-        } else if (msg[0].equals("top10")) {
-            List<User> top10 = controller.userService.findTop10ByOrderByPointDesc();
-            StringBuilder result = new StringBuilder("top10 ");
+        } else if (COMMAND_TOP10.equals(msg[0])) {
+            final List<User> top10 = controller.userService.findTop10ByOrderByPointDesc();
+            final StringBuilder result = new StringBuilder("top10 ");
 
-            for (User user : top10) {
-                result.append(user.id).append(" ").append(user.point).append(" ");
+            for (final User user : top10) {
+                result.append(user.userId).append(' ').append(user.point).append(' ');
             }
             client.conn.send(result.toString());
-        } else if (msg[0].equals("logout")) {
-            client.conn.send("logout success");
+        } else if (COMMAND_LOGOUT.equals(msg[0])) {
             controller.joinRoom(client, "auth");
-        } else if (msg[0].equals("info")) {
-            User user = controller.userService.findUserById(client.id);
-            client.conn.send("info " + user.id + " " + user.point);
+            client.conn.send("logout success");
+        } else if (COMMAND_INFO.equals(msg[0])) {
+            final User user = controller.userService.findUserById(client.userId);
+            client.conn.send("info " + user.userId + " " + user.point);
         } else {
             client.conn.send(msg[0] + " unknown command");
         }
     }
 
     @Override
-    public void removeClient(Client client) {
+    public void removeClient(final Client client) {
         super.removeClient(client);
 
-        if (client == waiting) {
+        if (client.equals(waiting)) {
             waiting = null;
         }
     }

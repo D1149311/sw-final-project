@@ -181,7 +181,7 @@ function Game() {
         setTimeout(() => {
           alert(message);
           navigate("/", {replace: true});
-        })
+        }, 1000)
       } else if (cmd === "threat") {
         if (message === "WHITE") {
           setThreat(false);

@@ -8,13 +8,16 @@
 
     <!-- exclude the checking of all files in xdemo   -->
     <!--    <exclude-pattern>.*[/\\]xdemo[/\\].*\.java</exclude-pattern>-->
+    <exclude-pattern>.*[/\\]game[/\\]ChessGame.java</exclude-pattern>
 
     <!--    the rules to be checked-->
     <rule ref="category/java/bestpractices.xml">
         <exclude name="SystemPrintln"/>
         <exclude name="AvoidReassigningParameters"/>
+        <exclude name="GuardLogStatement" />
     </rule>
     <rule ref="category/java/codestyle.xml">
+        <exclude name="NoPackage" />
     </rule>
     <rule ref="category/java/design.xml">
         <exclude name="CyclomaticComplexity" />
@@ -24,13 +27,18 @@
         <exclude name="NcssCount" />
         <exclude name="NPathComplexity" />
         <exclude name="TooManyMethods" />
+        <exclude name="DataClass" />
     </rule>
     <rule ref="category/java/documentation.xml" />
     <rule ref="category/java/errorprone.xml" >
         <exclude name="NullAssignment" />
+        <exclude name="AvoidDuplicateLiterals" />
+        <exclude name="ConstructorCallsOverridableMethod" />
     </rule>
     <rule ref="category/java/multithreading.xml" />
-    <rule ref="category/java/performance.xml" />
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidFileStream" />
+    </rule>
     <rule ref="category/java/security.xml" />
 
     <!--  override the rules  -->

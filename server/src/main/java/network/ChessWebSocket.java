@@ -8,66 +8,76 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import storage.IUserService;
+import storage.UserService;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-// from https://github.com/pusher/java-websocket/blob/master/src/main/example/ChatServer.java
+// https://github.com/pusher/java-websocket/blob/
+// master/src/main/example/ChatServer.java
+
+/**
+ * Create the websocket server
+ */
 public class ChessWebSocket extends WebSocketServer {
-    public HashMap<String, Room> rooms;
-    public HashMap<WebSocket, Client> clients;
+    private static final Logger LOGGER = Logger.getLogger(ChessWebSocket.class.getName());
+    public Map<String, Room> rooms;
+    public Map<WebSocket, Client> clients;
     public IUserService userService;
     public IGameService gameService;
 
-    public ChessWebSocket(int port, IUserService userService, IGameService gameService) {
+    /**
+     * Initialize websocket server
+     */
+    public ChessWebSocket(final int port, final IUserService userService, final IGameService gameService) {
         super(new InetSocketAddress(port));
+
         this.rooms = new HashMap<>();
         this.clients = new HashMap<>();
         this.userService = userService;
         this.gameService = gameService;
-        this.createStaticRooms();
-    }
 
-    private void createStaticRooms() {
         this.createRoom("auth", new AuthRoom(this));
         this.createRoom("lobby", new LobbyRoom(this));
     }
 
     @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        System.out.println("new connection: " + handshake.getResourceDescriptor());
-        System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!");
-        Client client = new Client(conn);
+    public void onOpen(final WebSocket conn, final ClientHandshake handshake) {
+        LOGGER.info("new connection: " + handshake.getResourceDescriptor());
+        final Client client = new Client(conn);
         clients.put(conn, client);
         joinRoom(client, "auth");
     }
 
     @Override
-    public void onClose(WebSocket conn, int i, String s, boolean b) {
-        System.out.println(conn + " has left the room!");
+    public void onClose(final WebSocket conn, final int closeCode, final String reason, boolean wasClean) {
+        LOGGER.info(conn + " has left the room!");
         leaveRoom(clients.get(conn));
     }
 
     @Override
-    public void onMessage(WebSocket conn, String message) {
-        System.out.println(message);
-        Client client = clients.get(conn);
-        try {
-            rooms.get(client.roomId).processMessage(client, message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onMessage(final WebSocket conn, final String message) {
+//        System.out.println(message);
+        final Client client = clients.get(conn);
+        rooms.get(client.roomId).processMessage(client, message);
     }
 
     @Override
-    public void onError(WebSocket conn, Exception e) {
-        e.printStackTrace();
+    public void onError(final WebSocket conn, final Exception exception) {
+        LOGGER.warning(exception.getMessage());
 //
 //        if(conn != null) {
-//            // some errors like port binding failed may not be assignable to a specific websocket
+//            // some errors like port binding failed may
+//            // not be assignable to a specific websocket
 //        }
     }
 
+    /**
+     * create a game room
+     */
     public String createRoom() {
         String roomId = "lobby";
 
@@ -75,47 +85,47 @@ public class ChessWebSocket extends WebSocketServer {
             roomId = String.valueOf((int) (Math.random() * 10));
         }
 
-        GameRoom room = new GameRoom(roomId, this);
+        final GameRoom room = new GameRoom(roomId, this);
         rooms.put(roomId, room);
 
         return roomId;
     }
 
-    public void createRoom(String roomId, Room room) {
+    /**
+     * create a room with room id
+     */
+    public void createRoom(final String roomId, final Room room) {
         rooms.put(roomId, room);
     }
 
-    public void destroyRoom(String roomId) {
-        for (int i = rooms.get(roomId).clients.size(); i > 0; i--) {
-            joinRoom(rooms.get(roomId).clients.getFirst(), "lobby");
+    /**
+     * destroy the room
+     */
+    public void destroyRoom(final String roomId) {
+        for (int client = rooms.get(roomId).clients.size(); client > 0; client--) {
+            joinRoom(rooms.get(roomId).clients.get(0), "lobby");
         }
         rooms.remove(roomId);
     }
 
-    public void joinRoom(Client conn, String roomId) {
+    /**
+     * join the user to the room
+     */
+    public void joinRoom(final Client conn, final String roomId) {
 //        if (roomId == null || !rooms.containsKey(roomId)) {
 //            return;
 //        }
 
         leaveRoom(conn); // Remove client from previous room
-        Room room = rooms.get(roomId);
+        final Room room = rooms.get(roomId);
         conn.setRoomId(roomId);
         room.addClient(conn);
     }
 
-    private void leaveRoom(Client conn) {
-        Room room = rooms.get(conn.roomId);
+    private void leaveRoom(final Client conn) {
+        final Room room = rooms.get(conn.roomId);
         if (room != null) {
             room.removeClient(conn);
         }
     }
-
-//    public void sendToAll(String text) {
-//        Collection<WebSocket> con = connections();
-//        synchronized (con) {
-//            for(WebSocket c : con) {
-//                c.send(text);
-//            }
-//        }
-//    }
 }

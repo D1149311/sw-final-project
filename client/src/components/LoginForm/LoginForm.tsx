@@ -59,6 +59,7 @@ function LoginForm() {
                 <div className="error">{error}</div>
                 <div className="form-field">
                     <input
+                        id="username"
                         type="text"
                         name="username"
                         placeholder=" "
@@ -69,6 +70,7 @@ function LoginForm() {
                 </div>
                 <div className="form-field">
                     <input
+                        id="password"
                         type="password"
                         name="password"
                         placeholder=" "
@@ -77,7 +79,7 @@ function LoginForm() {
                     />
                     <label htmlFor="password">密碼</label>
                 </div>
-                <button type="submit">
+                <button id="login" type="submit">
                     {isLoading ? <span className="loading-spinner"></span> : "登入"}
                 </button>
                 <span className="hint">

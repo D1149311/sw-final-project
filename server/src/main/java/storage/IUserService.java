@@ -2,12 +2,27 @@ package storage;
 
 import java.util.List;
 
+/**
+ * define user storage service
+ */
 public interface IUserService {
-    User findUserById(String id);
+    /**
+     * find user by userId, return null if not found
+     */
+    User findUserById(String userId);
 
+    /**
+     * get the top 10 point list
+     */
     List<User> findTop10ByOrderByPointDesc();
 
-    User createUser(String id, String password);
+    /**
+     * create a new user, and should save it
+     */
+    User createUser(String userId, String password);
 
-    void save();
+    /**
+     * save the data
+     */
+    boolean save();
 }

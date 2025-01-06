@@ -1,12 +1,18 @@
 package storage;
 
+/**
+ * A user should have follow data
+ */
 public class User {
-    public final String id;
+    public final String userId;
     public String password;
     public String point;
 
-    public User(String id, String password, String point) {
-        this.id = id;
+    /**
+     * Initialize user data
+     */
+    public User(final String userId, final String password, final String point) {
+        this.userId = userId;
         this.password = password;
         this.point = point;
     }
