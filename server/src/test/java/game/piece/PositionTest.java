@@ -13,5 +13,10 @@ public class PositionTest {
         Set<Position> expectedSet = new HashSet<Position>(expected);
         Set<Position> actualSet = new HashSet<Position>(actual);
         assertEquals(expectedSet, actualSet);
+        for(int i=0 ; i<expected.size() ; i++) {
+            Position e = expected.get(i);
+            Position a = actual.get(i);
+            assertEquals(e.eatable, a.eatable);
+        }
     }
 }
