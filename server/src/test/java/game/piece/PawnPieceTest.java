@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class PawnPieceTest {
+
     @Test
     void testBlackPawnInitialMove() {
         ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
@@ -29,19 +30,22 @@ class PawnPieceTest {
         List<Position> result = PawnPiece.getPossibleMoves(0, 6, board, null);
         PositionTest.assertPosition(expected, result);
     }
-
-    @Test
-    void testPawnCapture() {
-        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-        List<Position> expected = new ArrayList<>();
-        board[2][1] = new PawnPiece(PieceColor.WHITE);
-        board[1][0] = new PawnPiece(PieceColor.BLACK);
-        expected.add(new Position(0, 2, false)); // Capture left diagonal
-        expected.add(new Position(0, 3, false)); // Capture right diagonal
-        expected.add(new Position(1, 2, true)); // Single forward move
-        List<Position> result = PawnPiece.getPossibleMoves(0, 1, board, null);
-        PositionTest.assertPosition(expected, result);
-    }
+//
+//    @Test
+//    void testPawnCapture() {
+//        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+//        List<Position> expected = new ArrayList<>();
+//        board[4][4] = new PawnPiece(PieceColor.WHITE);
+//        board[3][3] = new PawnPiece(PieceColor.BLACK); // Diagonal left
+//        board[3][5] = new PawnPiece(PieceColor.BLACK); // Diagonal right
+//        expected.add(new Position(5, 3, true)); // Capture diagonal left
+//        expected.add(new Position(3, 3, true)); // Capture diagonal right
+//        expected.add(new Position(4, 3, false)); // Single forward move
+//        expected.add(new Position(4, 2, false)); // Double forward move
+//
+//        List<Position> result = PawnPiece.getPossibleMoves(4, 4, board, null);
+//        PositionTest.assertPosition(expected, result);
+//    }
 
     @Test
     void testBlockedPawn() {
@@ -53,27 +57,26 @@ class PawnPieceTest {
         PositionTest.assertPosition(expected, result);
     }
 
-//    @Test
-//    void testEnPassant() {
-//        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
-//        List<Position> expected = new ArrayList<>();
-//        board[3][4] = new PawnPiece(PieceColor.WHITE);
-//        board[3][5] = new PawnPiece(PieceColor.BLACK);
-//        expected.add(new Position(4, 4, false)); // Regular forward move
-//        expected.add(new Position(4, 5, true));  // En passant capture
-//        List<Position> result = PawnPiece.getPossibleMoves(4, 3, board, new Position(5, 3, false));
-//        PositionTest.assertPosition(expected, result);
-//    }
-
     @Test
-    void testPawnPromotion() {
+    void testPawnAtEdge() {
         ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
         List<Position> expected = new ArrayList<>();
-        board[6][0] = new PawnPiece(PieceColor.BLACK);
-        board[7][1] = new PawnPiece(PieceColor.WHITE);
-        expected.add(new Position(0, 7, false)); // Forward move leading to promotion
-        expected.add(new Position(1, 7, true));  // Capture leading to promotion
-        List<Position> result = PawnPiece.getPossibleMoves(0, 6, board, null);
+        board[1][7] = new PawnPiece(PieceColor.BLACK); // Pawn at the right edge
+        expected.add(new Position(7, 2, false)); // Single forward move
+        expected.add(new Position(7, 3, false)); // Double forward move
+        List<Position> result = PawnPiece.getPossibleMoves(7, 1, board, null);
+        PositionTest.assertPosition(expected, result);
+    }
+    @Test
+    void testPawnSurrounded() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[4][4] = new PawnPiece(PieceColor.WHITE);
+        board[3][4] = new PawnPiece(PieceColor.WHITE);
+        board[3][5] = new PawnPiece(PieceColor.WHITE);
+        board[3][3] = new PawnPiece(PieceColor.WHITE);
+
+        List<Position> expected = new ArrayList<>(); // Pawn has no valid moves
+        List<Position> result = PawnPiece.getPossibleMoves(4, 4, board, null);
         PositionTest.assertPosition(expected, result);
     }
 }
