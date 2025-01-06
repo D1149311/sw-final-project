@@ -1,5 +1,5 @@
-Feature: Play Online
-  Play the chess with random player
+Feature: Play with friend
+  Play the chess with friend
 
   Scenario: Checkmate
     Given Client0 entered the website

@@ -16,7 +16,7 @@ Feature: Login and register the game
     And Client1 enter "abcd" in the password field
     And Client1 click the "login" button
     Then Client1 should be in the "" page
-    Then Client0 should see the greeting "歡迎，abcd"
+    Then Client1 should see the greeting "歡迎，abcd"
 
   Scenario: Login with unknown account
     Given Client0 entered the website
