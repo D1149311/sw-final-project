@@ -114,4 +114,13 @@ class RookPieceTest {
         List<Position> result = RookPiece.getPossibleMoves(0, 3, board);
         PositionTest.assertPosition(expect, result);
     }
+
+    @Test
+    void testHasMoved() {
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[3][3] = new RookPiece(PieceColor.WHITE);
+        assertFalse(((RookPiece)board[3][3]).hasMoved());
+        ((RookPiece)board[3][3]).setHasMoved();
+        assertTrue(((RookPiece)board[3][3]).hasMoved());
+    }
 }

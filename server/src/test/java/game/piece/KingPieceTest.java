@@ -84,6 +84,7 @@ class KingPieceTest {
         List<Position> result = KingPiece.getPossibleMoves(0, 0, board);
         PositionTest.assertPosition(expected, result);
     }
+
     /*PiTest*/
     @Test
     void testInvalidPosition() {
@@ -93,6 +94,7 @@ class KingPieceTest {
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> KingPiece.getPossibleMoves(0, -1, board));
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> KingPiece.getPossibleMoves(8, 8, board));
     }
+
     @Test
     void testFullBoardScenario() {
         ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
@@ -106,6 +108,7 @@ class KingPieceTest {
         List<Position> result = KingPiece.getPossibleMoves(4, 4, board);
         PositionTest.assertPosition(expected, result);
     }
+
     @Test
     void testSurroundedByEnemies() {
         ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
@@ -128,6 +131,7 @@ class KingPieceTest {
         List<Position> result = KingPiece.getPossibleMoves(4, 4, board);
         PositionTest.assertPosition(expected, result);
     }
+
     @Test
     void testKingNearBoundary() {
         ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
@@ -141,5 +145,90 @@ class KingPieceTest {
         PositionTest.assertPosition(expected, result);
     }
 
+    @Test
+    void testGetAttackRange() {
+        // 周圍都可攻擊
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[6][6] = new KingPiece(PieceColor.WHITE);
+        List<Position> expected = List.of(
+                new Position(5, 5, false),
+                new Position(5, 6, false),
+                new Position(5, 7, false),
+                new Position(6, 5, false),
+                new Position(6, 7, false),
+                new Position(7, 5, false),
+                new Position(7, 6, false),
+                new Position(7, 7, false)
+        );
+        List<Position> result = KingPiece.getAttackRange(6, 6, board);
+        PositionTest.assertPosition(expected, result);
 
+        // 上面不可攻擊
+        board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[7][6] = new KingPiece(PieceColor.WHITE);
+        expected = List.of(
+                new Position(5, 6, false),
+                new Position(6, 6, false),
+                new Position(7, 6, false),
+                new Position(5, 7, false),
+                new Position(7, 7, false)
+        );
+        result = KingPiece.getAttackRange(6, 7, board);
+        PositionTest.assertPosition(expected, result);
+
+        // 上面不可攻擊
+        board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[6][6] = new KingPiece(PieceColor.WHITE);
+        board[7][5] = new QueenPiece(PieceColor.BLACK);
+        board[7][6] = new QueenPiece(PieceColor.WHITE);
+        board[7][7] = new QueenPiece(PieceColor.WHITE);
+        expected = List.of(
+                new Position(5, 5, false),
+                new Position(6, 5, false),
+                new Position(7, 5, false),
+                new Position(5, 6, false),
+                new Position(7, 6, false),
+                new Position(5, 7, true)
+        );
+        result = KingPiece.getAttackRange(6, 6, board);
+        PositionTest.assertPosition(expected, result);
+
+        expected = List.of(
+                new Position(6, 5, false),
+                new Position(7, 5, false),
+                new Position(7, 6, false),
+                new Position(5, 7, true)
+        );
+        result = KingPiece.getPossibleMoves(6, 6, board);
+        PositionTest.assertPosition(expected, result);
+    }
+
+    @Test
+    void testMoved() {
+        // 周圍都可攻擊
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[6][6] = new KingPiece(PieceColor.WHITE);
+
+        assertFalse(((KingPiece)board[6][6]).hasMoved());
+        ((KingPiece)board[6][6]).setHasMoved();
+        assertTrue(((KingPiece)board[6][6]).hasMoved());
+    }
+
+    @Test
+    void testPossibleMoves() {
+        // 王不見王
+        ChessPiece[][] board = new ChessPiece[ChessUtils.BOARD_SIZE][ChessUtils.BOARD_SIZE];
+        board[6][6] = new KingPiece(PieceColor.WHITE);
+        board[6][4] = new KingPiece(PieceColor.BLACK);
+
+        List<Position> expected = List.of(
+                new Position(6, 5, false),
+                new Position(6, 7, false),
+                new Position(7, 5, false),
+                new Position(7, 6, false),
+                new Position(7, 7, false)
+        );
+        List<Position> result = KingPiece.getPossibleMoves(6, 6, board);
+        PositionTest.assertPosition(expected, result);
+    }
 }
